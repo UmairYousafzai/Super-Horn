@@ -3,9 +3,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:superhorn/providers/shared_pref_provider.dart';
-import 'package:superhorn/screens/auth/login_screen.dart';
-import 'package:superhorn/screens/connectivity/bluetooth_devices_widget.dart';
-import 'package:superhorn/screens/homescreen.dart';
+import 'package:superhorn/screens/landing_screen.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -50,8 +48,8 @@ class MyApp extends ConsumerWidget {
           builder: (context, child) {
             return MaterialApp(
               debugShowCheckedModeBanner: false,
-             // home: userExists ? Homescreen() : const LoginScreen(),
-              home: BluetoothDevicesWidget(),
+              // home: userExists ? Homescreen() : const LoginScreen(),
+              home: LandingScreen(),
             );
           },
         );

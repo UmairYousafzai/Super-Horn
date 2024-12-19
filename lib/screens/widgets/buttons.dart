@@ -4,7 +4,8 @@ import 'package:superhorn/utils/media_query_extension.dart';
 
 import '../../core/theme/colors.dart';
 
-primaryButton(BuildContext context, Widget child, VoidCallback onTap,{double? width,double? height}) {
+primaryButton(BuildContext context, Widget child, VoidCallback onTap,
+    {double? width, double? height}) {
   return GestureDetector(
     onTap: onTap,
     child: Container(
@@ -20,6 +21,22 @@ primaryButton(BuildContext context, Widget child, VoidCallback onTap,{double? wi
             ],
           ),
           borderRadius: const BorderRadius.all(Radius.circular(16))),
+      child: Center(child: child),
+    ),
+  );
+}
+
+outlinedButton(BuildContext context, Widget child, VoidCallback onTap,
+    {double? width, double? height}) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Container(
+      height: height ?? context.mqH(0.075.h),
+      width: width ?? context.mqW(0.9.w),
+      decoration: BoxDecoration(
+          color: AColors.primaryColor.withOpacity(0.05),
+          borderRadius: const BorderRadius.all(Radius.circular(16)),
+          border: Border.all(color: AColors.primaryColor, width: 2)),
       child: Center(child: child),
     ),
   );
