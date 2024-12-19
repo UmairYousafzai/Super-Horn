@@ -8,7 +8,7 @@
 
 #include <audioplayers_windows/audioplayers_windows_plugin.h>
 
-void RegisterPlugins(flutter::PluginRegistry *registry) {
-    AudioplayersWindowsPluginRegisterWithRegistrar(
-            registry->GetRegistrarForPlugin("AudioplayersWindowsPlugin"));
+void RegisterPlugins(flutter::PluginRegistry* registry) {
+  AudioplayersWindowsPluginRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("AudioplayersWindowsPlugin"));
 }

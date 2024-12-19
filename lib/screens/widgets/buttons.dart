@@ -4,12 +4,12 @@ import 'package:superhorn/utils/media_query_extension.dart';
 
 import '../../core/theme/colors.dart';
 
-primaryButton(BuildContext context, Widget child, VoidCallback onTap) {
+primaryButton(BuildContext context, Widget child, VoidCallback onTap,{double? width,double? height}) {
   return GestureDetector(
     onTap: onTap,
     child: Container(
-      height: context.mqH(0.075.h),
-      width: context.mqW(0.9.w),
+      height: height ?? context.mqH(0.075.h),
+      width: width ?? context.mqW(0.9.w),
       decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
