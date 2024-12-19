@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:superhorn/screens/auth/login_screen.dart';
 import 'package:superhorn/utils/navigations.dart';
 
+import '../../core/theme/colors.dart';
 import '../../providers/shared_pref_provider.dart';
 
 class MyDrawer extends ConsumerWidget {
@@ -19,7 +20,8 @@ class MyDrawer extends ConsumerWidget {
         children: [
           // Drawer Header with User Info
           UserAccountsDrawerHeader(
-            decoration: BoxDecoration(color: Colors.red.shade400),
+            decoration:
+                BoxDecoration(color: AColors.primaryColor.withOpacity(0.8)),
             accountName: Text(userData['name'] ?? 'No Name'),
             accountEmail: Text(userData['email'] ?? 'No Email'),
             currentAccountPicture: const CircleAvatar(

@@ -64,8 +64,10 @@ class _CustomTextFieldState extends State<TextFieldWidget> {
                   onChanged: widget.onChanged,
                   decoration: InputDecoration(
                     hintText: widget.hintText,
-                    hintStyle:
-                        const TextStyle(color: Colors.grey, fontSize: 16),
+                    hintStyle: const TextStyle(
+                        fontFamily: 'JosefinSans',
+                        color: Colors.grey,
+                        fontSize: 16),
                     border: InputBorder.none,
                   ),
                 ),

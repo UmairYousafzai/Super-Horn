@@ -53,6 +53,7 @@ class SignupScreen extends ConsumerWidget {
                           Text(
                             'SIGN UP',
                             style: TextStyle(
+                              fontFamily: 'JosefinSans',
                               color: AColors.primaryColor,
                               fontWeight: FontWeight.w700,
                               fontSize: 32.sp,
@@ -62,6 +63,7 @@ class SignupScreen extends ConsumerWidget {
                           Text(
                             'Hello! let’s join with us.',
                             style: TextStyle(
+                              fontFamily: 'JosefinSans',
                               color: Colors.black,
                               fontWeight: FontWeight.w400,
                               fontSize: 22.sp,
@@ -74,6 +76,7 @@ class SignupScreen extends ConsumerWidget {
                     Text(
                       'Name',
                       style: TextStyle(
+                        fontFamily: 'JosefinSans',
                         fontWeight: FontWeight.w500,
                         color: Colors.black,
                         fontSize: 16.sp,
@@ -92,6 +95,7 @@ class SignupScreen extends ConsumerWidget {
                     Text(
                       'Email',
                       style: TextStyle(
+                        fontFamily: 'JosefinSans',
                         fontWeight: FontWeight.w500,
                         color: Colors.black,
                         fontSize: 16.sp,
@@ -110,6 +114,7 @@ class SignupScreen extends ConsumerWidget {
                     Text(
                       'Password',
                       style: TextStyle(
+                        fontFamily: 'JosefinSans',
                         fontWeight: FontWeight.w500,
                         color: Colors.black,
                         fontSize: 16.sp,
@@ -129,6 +134,7 @@ class SignupScreen extends ConsumerWidget {
                     Text(
                       'City',
                       style: TextStyle(
+                        fontFamily: 'JosefinSans',
                         fontWeight: FontWeight.w500,
                         color: Colors.black,
                         fontSize: 16.sp,
@@ -147,6 +153,7 @@ class SignupScreen extends ConsumerWidget {
                     Text(
                       'Country',
                       style: TextStyle(
+                        fontFamily: 'JosefinSans',
                         fontWeight: FontWeight.w500,
                         color: Colors.black,
                         fontSize: 16.sp,
@@ -166,7 +173,10 @@ class SignupScreen extends ConsumerWidget {
                         context,
                         const Text(
                           "Get Started",
-                          style: TextStyle(fontSize: 20, color: Colors.white),
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 20,
+                              color: Colors.white),
                         ), () async {
                       if (signupState.email.isNotEmpty &&
                           signupState.name.isNotEmpty &&

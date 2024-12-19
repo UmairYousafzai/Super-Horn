@@ -46,20 +46,22 @@ class LoginScreen extends ConsumerWidget {
                             Text(
                               'LOG IN',
                               style: TextStyle(
-                                color: AColors.primaryColor,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 32.sp,
-                              ),
+                                  fontFamily: 'JosefinSans',
+                                  color: AColors.primaryColor,
+                                  fontSize: 32.sp,
+                                  fontWeight: FontWeight.w700),
                             ),
                             SizedBox(height: 20.h),
                             Text(
                               'Hi! Welcome back ',
                               style: TextStyle(
+                                fontFamily: 'JosefinSans',
                                 color: Colors.black,
                                 fontWeight: FontWeight.w400,
                                 fontSize: 22.sp,
                               ),
                             ),
+                            SizedBox(height: 5.h),
                             RichText(
                               text: TextSpan(
                                 children: [
@@ -67,7 +69,7 @@ class LoginScreen extends ConsumerWidget {
                                     text: 'Super ',
                                     style: TextStyle(
                                       color: AColors.primaryColor,
-                                      // Red color for "Super"
+                                      fontFamily: 'JosefinSans',
                                       fontSize: 22.sp,
                                       fontWeight:
                                           FontWeight.bold, // Optional bold
@@ -76,9 +78,9 @@ class LoginScreen extends ConsumerWidget {
                                   TextSpan(
                                     text: 'Air Horn',
                                     style: TextStyle(
-                                      color: Colors
-                                          .black, // Black color for "Air Horn"
-                                      fontSize: 22.sp,
+                                      color: Colors.black,
+                                      fontFamily: 'JosefinSans',
+                                      fontSize: 24.sp,
                                       fontWeight:
                                           FontWeight.bold, // Optional bold
                                     ),
@@ -93,6 +95,7 @@ class LoginScreen extends ConsumerWidget {
                       Text(
                         'Email',
                         style: TextStyle(
+                          fontFamily: 'JosefinSans',
                           fontWeight: FontWeight.w500,
                           color: Colors.black,
                           fontSize: 16.sp,
@@ -110,6 +113,7 @@ class LoginScreen extends ConsumerWidget {
                       Text(
                         'Password',
                         style: TextStyle(
+                          fontFamily: 'JosefinSans',
                           fontWeight: FontWeight.w500,
                           color: Colors.black,
                           fontSize: 16.sp,
@@ -131,6 +135,7 @@ class LoginScreen extends ConsumerWidget {
                           child: Text(
                             "Forget Password?",
                             style: TextStyle(
+                              fontFamily: 'JosefinSans',
                               color: AColors.primaryColor,
                               decoration: TextDecoration.underline,
                               decorationColor: AColors.primaryColor,
@@ -144,8 +149,10 @@ class LoginScreen extends ConsumerWidget {
                         context,
                         Text(
                           "Get Started",
-                          style:
-                              TextStyle(fontSize: 20.sp, color: Colors.white),
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 20.sp,
+                              color: Colors.white),
                         ),
                         () {
                           if (loginState.email.isNotEmpty &&
@@ -156,7 +163,12 @@ class LoginScreen extends ConsumerWidget {
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                  content: Text('Please enter valid inputs')),
+                                  content: Text(
+                                'Please enter valid inputs',
+                                style: TextStyle(
+                                  fontFamily: 'JosefinSans',
+                                ),
+                              )),
                             );
                           }
                         },
@@ -178,12 +190,15 @@ class LoginScreen extends ConsumerWidget {
                               ),
                               children: [
                                 const TextSpan(
-                                  text:
-                                      "Don't have an account? ", // Regular text
-                                ),
+                                    text: "Don't have an account? ",
+                                    style: TextStyle(
+                                      fontFamily: 'JosefinSans',
+                                    ) // Regular text
+                                    ),
                                 TextSpan(
                                   text: "Register", // Styled text
                                   style: TextStyle(
+                                    fontFamily: 'JosefinSans',
                                     color: AColors.primaryColor,
                                     // Red color for "Register"
                                     fontWeight:

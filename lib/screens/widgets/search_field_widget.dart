@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/colors.dart';
+
 class SearchFieldWidget extends StatelessWidget {
   const SearchFieldWidget({
     super.key,
@@ -14,23 +16,26 @@ class SearchFieldWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextField(
       focusNode: focusNode,
-      cursorColor: Colors.red.shade400,
+      cursorColor: AColors.primaryColor,
       controller: _searchController,
       decoration: InputDecoration(
         labelText: 'Search horns',
-        labelStyle: TextStyle(color: Colors.red.shade400),
+        labelStyle: TextStyle(
+          fontFamily: 'JosefinSans',
+          color: AColors.primaryColor,
+        ),
         prefixIcon: Icon(
           Icons.search,
-          color: Colors.red.shade400,
+          color: AColors.primaryColor,
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.red.shade400, width: 2),
+          borderSide: BorderSide(color: AColors.primaryColor, width: 2),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(
-              color: Colors.red.shade200,
+              color: AColors.primaryColor,
               width: 1), // Red border when not focused
         ),
         border: OutlineInputBorder(

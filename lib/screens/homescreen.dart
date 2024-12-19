@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:superhorn/screens/widgets/search_field_widget.dart';
 
+import '../core/theme/colors.dart';
 import '../data/data_source/local/sound_data.dart';
 import '../domain/entities/sound.dart';
 import '../providers/checked_item_provider.dart';
@@ -105,16 +106,26 @@ class _HomescreenState extends ConsumerState<Homescreen> {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: const Text('Home'),
-          backgroundColor: Colors.white,
+          title: const Text(
+            'Home',
+            style: TextStyle(
+              fontFamily: 'JosefinSans',
+            ),
+          ),
+          backgroundColor: Colors.transparent,
           actions: [
             Row(
               children: [
                 Text(
                   "Select All",
-                  style: TextStyle(color: Colors.black, fontSize: 14.sp),
+                  style: TextStyle(
+                      fontFamily: 'JosefinSans',
+                      color: Colors.black,
+                      fontSize: 14.sp),
                 ),
                 Checkbox(
+                  checkColor: Colors.white,
+                  activeColor: AColors.primaryColor.withOpacity(0.8),
                   value: isAllSelected,
                   onChanged: (bool? value) {
                     ref
@@ -131,15 +142,30 @@ class _HomescreenState extends ConsumerState<Homescreen> {
                   itemBuilder: (context) => [
                     const PopupMenuItem(
                       value: "All",
-                      child: Text("All"),
+                      child: Text(
+                        "All",
+                        style: TextStyle(
+                          fontFamily: 'JosefinSans',
+                        ),
+                      ),
                     ),
                     const PopupMenuItem(
                       value: "INDONESIA",
-                      child: Text("Indonesia"),
+                      child: Text(
+                        "Indonesia",
+                        style: TextStyle(
+                          fontFamily: 'JosefinSans',
+                        ),
+                      ),
                     ),
                     const PopupMenuItem(
                       value: "ENGLISH",
-                      child: Text("English"),
+                      child: Text(
+                        "English",
+                        style: TextStyle(
+                          fontFamily: 'JosefinSans',
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -153,119 +179,138 @@ class _HomescreenState extends ConsumerState<Homescreen> {
           }
         },
         drawer: MyDrawer(),
-        body: Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: Column(
-            children: [
-              // Search Field
-              SearchFieldWidget(
-                searchController: _searchController,
-                focusNode: _searchFocusNode,
-              ),
-              SizedBox(height: 10.h),
-              // List of filtered sounds
-              Expanded(
-                child: ListView.builder(
-                  itemCount: _filteredSounds.length,
-                  itemBuilder: (context, index) {
-                    bool isPlaying = _currentlyPlayingIndex == index;
-                    bool isChecked =
-                        checkedItems.contains(_filteredSounds[index]);
-
-                    return Card(
-                      elevation: 2.0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      color: Colors.white,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 7),
-                        child: Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 2, horizontal: 4),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _filteredSounds[index].soundName,
-                                    overflow: TextOverflow.ellipsis,
-                                    // Adds ellipsis when text overflows
-                                    style: TextStyle(
-                                      fontSize: 16.sp,
-                                      color: Colors.red.shade400,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  SizedBox(height: 10.h),
-                                  Text(
-                                    "(${_filteredSounds[index].code})",
-                                    overflow: TextOverflow.ellipsis,
-                                    // Adds ellipsis when text overflows
-
-                                    style: TextStyle(
-                                      fontSize: 12.sp,
-                                      color: Colors.red.shade400,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  SizedBox(height: 10.h),
-                                  Text(
-                                    _filteredSounds[index].category,
-                                    style: TextStyle(
-                                      fontSize: 12.sp,
-                                      color: Colors.red.shade400,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const Spacer(),
-
-                            // Play button
-                            GestureDetector(
-                              onTap: () {
-                                _playPauseHornSound(
-                                    _filteredSounds[index].hornSound!, index);
-                              },
-                              child: Container(
-                                height: 40,
-                                width: 40,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.red.shade500,
-                                ),
-                                child: Icon(
-                                  isPlaying
-                                      ? Icons.pause
-                                      : Icons.play_arrow_outlined,
-                                  size: 30,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                            // Checkbox for individual items
-                            Checkbox(
-                              value: isChecked,
-                              onChanged: (bool? value) {
-                                if (value != null) {
-                                  ref
-                                      .read(checkedItemsProvider.notifier)
-                                      .toggleItem(_filteredSounds[index]);
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
+        body: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/background.png'),
+              fit: BoxFit.cover, // Ensures the image covers the entire screen
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Column(
+              children: [
+                // Search Field
+                SearchFieldWidget(
+                  searchController: _searchController,
+                  focusNode: _searchFocusNode,
                 ),
-              ),
-            ],
+                SizedBox(height: 10.h),
+                // List of filtered sounds
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _filteredSounds.length,
+                    itemBuilder: (context, index) {
+                      bool isPlaying = _currentlyPlayingIndex == index;
+                      bool isChecked =
+                          checkedItems.contains(_filteredSounds[index]);
+
+                      return Card(
+                        elevation: 2.0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        color: Colors.white,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 7),
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 2, horizontal: 4),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      _filteredSounds[index].soundName,
+                                      overflow: TextOverflow.ellipsis,
+                                      // Adds ellipsis when text overflows
+                                      style: TextStyle(
+                                        fontFamily: 'JosefinSans',
+                                        fontSize: 16.sp,
+                                        color: AColors.primaryColor,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    SizedBox(height: 10.h),
+                                    Text(
+                                      "(${_filteredSounds[index].code})",
+                                      overflow: TextOverflow.ellipsis,
+                                      // Adds ellipsis when text overflows
+
+                                      style: TextStyle(
+                                        fontFamily: 'JosefinSans',
+                                        fontSize: 12.sp,
+                                        color: AColors.primaryColor,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    SizedBox(height: 10.h),
+                                    Text(
+                                      _filteredSounds[index].category,
+                                      style: TextStyle(
+                                        fontFamily: 'JosefinSans',
+                                        fontSize: 12.sp,
+                                        color: AColors.primaryColor,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const Spacer(),
+
+                              // Play button
+                              GestureDetector(
+                                onTap: () {
+                                  _playPauseHornSound(
+                                      _filteredSounds[index].hornSound!, index);
+                                },
+                                child: Container(
+                                  height: 40,
+                                  width: 40,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color:
+                                        AColors.primaryColor.withOpacity(0.8),
+                                  ),
+                                  child: Icon(
+                                    isPlaying
+                                        ? Icons.pause
+                                        : Icons.play_arrow_outlined,
+                                    size: 30,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              // Checkbox for individual items
+                              Checkbox(
+                                value: isChecked,
+                                checkColor: Colors.white,
+                                activeColor:
+                                    AColors.primaryColor.withOpacity(0.8),
+                                // Set the fill color (background when checked)
+
+                                onChanged: (bool? value) {
+                                  if (value != null) {
+                                    ref
+                                        .read(checkedItemsProvider.notifier)
+                                        .toggleItem(_filteredSounds[index]);
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
