@@ -47,5 +47,13 @@
 		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+        <key>NSBluetoothAlwaysUsageDescription</key>
+            <string>Our app uses bluetooth to find, connect and transfer data between different devices</string>
+            <key>NSBluetoothPeripheralUsageDescription</key>
+            <string>Our app uses bluetooth to find, connect and transfer data between different devices</string>
+            <key>NSLocationWhenInUseUsageDescription</key>
+            <string>This app needs access to location when open to detect beacons and bluetooth devices.</string>
+            <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+            <string>This app needs access to location when in the background to detect beacons and bluetooth devices.
 	</dict>
 </plist>
