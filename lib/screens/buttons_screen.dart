@@ -36,11 +36,11 @@ class ButtonsScreen extends ConsumerWidget {
                       children: [
                         primaryButton(
                             context,
-                            const Text(
+                            Text(
                               "Next",
                               style: TextStyle(
                                   fontFamily: 'Poppins',
-                                  fontSize: 20,
+                                  fontSize: 16.sp,
                                   color: Colors.white),
                             ),
                             () {}),
@@ -49,11 +49,11 @@ class ButtonsScreen extends ConsumerWidget {
                         ),
                         primaryButton(
                             context,
-                            const Text(
+                            Text(
                               "Previous",
                               style: TextStyle(
                                   fontFamily: 'Poppins',
-                                  fontSize: 20,
+                                  fontSize: 16.sp,
                                   color: Colors.white),
                             ),
                             () {}),
@@ -62,11 +62,11 @@ class ButtonsScreen extends ConsumerWidget {
                         ),
                         primaryButton(
                             context,
-                            const Text(
+                            Text(
                               "Play",
                               style: TextStyle(
                                   fontFamily: 'Poppins',
-                                  fontSize: 20,
+                                  fontSize: 16.sp,
                                   color: Colors.white),
                             ),
                             () {}),
@@ -75,11 +75,11 @@ class ButtonsScreen extends ConsumerWidget {
                         ),
                         primaryButton(
                             context,
-                            const Text(
+                            Text(
                               "Reset",
                               style: TextStyle(
                                   fontFamily: 'Poppins',
-                                  fontSize: 20,
+                                  fontSize: 16.sp,
                                   color: Colors.white),
                             ),
                             () {}),

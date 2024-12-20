@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:superhorn/screens/auth/login_screen.dart';
-import 'package:superhorn/utils/navigations.dart';
 
 import '../../core/theme/colors.dart';
+import '../../core/utils/navigations.dart';
 import '../../providers/shared_pref_provider.dart';
 
 class MyDrawer extends ConsumerWidget {

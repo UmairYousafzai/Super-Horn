@@ -46,7 +46,7 @@ class MyApp extends ConsumerWidget {
               const Size(375, 812), // Replace with your design screen size
           minTextAdapt: true,
           builder: (context, child) {
-            return MaterialApp(
+            return const MaterialApp(
               debugShowCheckedModeBanner: false,
               // home: userExists ? Homescreen() : const LoginScreen(),
               home: LandingScreen(),

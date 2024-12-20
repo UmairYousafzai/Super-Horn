@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:superhorn/utils/media_query_extension.dart';
+import 'package:superhorn/core/utils/media_query_extension.dart';
 
 import '../../core/theme/colors.dart';
 
@@ -61,4 +61,60 @@ socialButton(BuildContext context, String image) {
       ),
     ),
   );
+}
+
+class WhiteContainerButton extends StatelessWidget {
+  const WhiteContainerButton({
+    super.key,
+    required this.img,
+    required this.text,
+    required this.onPress,
+  });
+
+  final String img;
+  final String text;
+  final VoidCallback onPress;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onPress,
+      child: Container(
+        height: context.mqH(0.22.h),
+        width: context.mqW(0.9.w),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(1),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2), // Shadow color with opacity
+              offset: const Offset(0, 0), // No offset to spread shadow evenly
+              blurRadius: 5, // How blurry the shadow is
+              spreadRadius: 1, // How much the shadow spreads
+            ),
+          ],
+          borderRadius: const BorderRadius.all(Radius.circular(16)),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              img,
+              height: 50.h,
+            ),
+            SizedBox(
+              height: 18.h,
+            ),
+            Text(
+              text,
+              style: TextStyle(
+                  fontFamily: 'Poppins',
+                  color: AColors.primaryColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18.sp),
+            )
+          ],
+        ),
+      ),
+    );
+  }
 }

@@ -4,8 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:superhorn/core/theme/colors.dart';
 import 'package:superhorn/screens/auth/signup_screen.dart';
 import 'package:superhorn/screens/homescreen.dart';
-import 'package:superhorn/utils/navigations.dart';
 
+import '../../core/utils/navigations.dart';
 import '../../providers/login_provider.dart';
 import '../widgets/buttons.dart';
 import '../widgets/text_field_widget.dart';

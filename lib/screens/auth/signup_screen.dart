@@ -4,9 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:superhorn/providers/shared_pref_provider.dart';
 import 'package:superhorn/screens/homescreen.dart';
-import 'package:superhorn/utils/navigations.dart';
 
 import '../../core/theme/colors.dart';
+import '../../core/utils/navigations.dart';
 import '../../providers/signup_provider.dart';
 import '../widgets/buttons.dart';
 import '../widgets/text_field_widget.dart';

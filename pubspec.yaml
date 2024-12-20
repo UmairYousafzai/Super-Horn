@@ -78,6 +78,7 @@ flutter:
     - assets/splash/
     - assets/sounds/
     - assets/svg/
+    - assets/icons/
     - assets/
 
 
