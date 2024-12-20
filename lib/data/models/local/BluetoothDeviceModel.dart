@@ -5,10 +5,16 @@ class BluetoothDeviceModel extends BluetoothDevice{
 
   BluetoothDeviceModel({
     required super.deviceId,
-    required super.deviceName
+    required super.deviceName,
+    required super.isConnecting, required super.isConnected
   });
 
   BluetoothDeviceModel.copy(BluetoothDevice device):
-        this(deviceId: device.deviceId,deviceName: device.deviceName);
+        this(
+          deviceId: device.deviceId,
+          deviceName: device.deviceName,
+          isConnecting: device.isConnecting,
+          isConnected: device.isConnected
+      );
 
 }
