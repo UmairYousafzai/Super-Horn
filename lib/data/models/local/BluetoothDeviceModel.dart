@@ -1,18 +1,18 @@
 
-import 'package:superhorn/domain/entities/bluetooth_device.dart';
+import 'package:superhorn/domain/entities/connectable_device.dart';
 
-class BluetoothDeviceModel extends BluetoothDevice{
+class BluetoothDeviceModel extends ConnectableDevice{
 
   BluetoothDeviceModel({
-    required super.deviceId,
     required super.deviceName,
+    required super.deviceAddress,
     required super.isConnecting, required super.isConnected
   });
 
-  BluetoothDeviceModel.copy(BluetoothDevice device):
+  BluetoothDeviceModel.copy(ConnectableDevice device):
         this(
-          deviceId: device.deviceId,
           deviceName: device.deviceName,
+          deviceAddress: device.deviceAddress,
           isConnecting: device.isConnecting,
           isConnected: device.isConnected
       );

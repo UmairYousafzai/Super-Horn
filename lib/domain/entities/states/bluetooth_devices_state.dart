@@ -1,11 +1,11 @@
 
-import 'package:superhorn/domain/entities/bluetooth_device.dart';
+import 'package:superhorn/domain/entities/connectable_device.dart';
 
 class BluetoothDevicesState{
 
   bool isScanning;
   bool isConnecting;
-  List<BluetoothDevice> devicesList;
+  List<ConnectableDevice> devicesList;
 
 
   BluetoothDevicesState({
@@ -18,7 +18,7 @@ class BluetoothDevicesState{
   BluetoothDevicesState copyWith({
     bool? isScanning,
     bool? isConnecting,
-    List<BluetoothDevice>? devicesList
+    List<ConnectableDevice>? devicesList
   }){
 
     return BluetoothDevicesState(

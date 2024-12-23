@@ -2,12 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:superhorn/screens/widgets/buttons.dart';
+import 'package:superhorn/screens/widgets/snackBar_messages.dart';
 
-class ButtonsScreen extends ConsumerWidget {
-  const ButtonsScreen({super.key});
+import '../providers/bluetooth_provider.dart';
+
+class PlayHornWithBluetooth extends ConsumerWidget {
+  const PlayHornWithBluetooth({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final bluetoothNotifier = ref.read(bluetoothNotifierProvider.notifier);
+
+    ref.listen(bluetoothNotifierProvider, (prev,next){
+
+      if(next.errorMessage.isNotEmpty){
+        showErrorSnackBar(context, next.errorMessage);
+        bluetoothNotifier.setError("");
+      }
+      if(next.successMessage.isNotEmpty){
+        showErrorSnackBar(context, next.successMessage);
+        bluetoothNotifier.setSuccess("");
+      }
+    });
+
     return Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
@@ -43,7 +60,10 @@ class ButtonsScreen extends ConsumerWidget {
                                   fontSize: 16.sp,
                                   color: Colors.white),
                             ),
-                            () {}),
+                            () {
+                              bluetoothNotifier.sendData("1");
+
+                            }),
                         SizedBox(
                           height: 25.h,
                         ),
@@ -69,7 +89,10 @@ class ButtonsScreen extends ConsumerWidget {
                                   fontSize: 16.sp,
                                   color: Colors.white),
                             ),
-                            () {}),
+                            () {
+                              bluetoothNotifier.sendData("p");
+
+                            }),
                         SizedBox(
                           height: 25.h,
                         ),
@@ -82,7 +105,10 @@ class ButtonsScreen extends ConsumerWidget {
                                   fontSize: 16.sp,
                                   color: Colors.white),
                             ),
-                            () {}),
+                            () {
+                              bluetoothNotifier.sendData("0");
+
+                            }),
                       ]),
                 ),
               ),

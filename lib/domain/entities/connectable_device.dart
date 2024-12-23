@@ -1,14 +1,14 @@
 
-class BluetoothDevice{
+class ConnectableDevice{
 
-  double? deviceId;
   String? deviceName;
+  String? deviceAddress;
   bool isConnecting;
   bool isConnected;
 
-  BluetoothDevice({
-    required this.deviceId,
+  ConnectableDevice({
     required this.deviceName,
+    required this.deviceAddress,
     required this.isConnecting,
     required this.isConnected
 });

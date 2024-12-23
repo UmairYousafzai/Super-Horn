@@ -1,8 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:superhorn/domain/entities/connectable_device.dart';
 
 class BluetoothServiceClass {
-  final FlutterBluetoothSerial bluetoothSerial = FlutterBluetoothSerial.instance;
+  final FlutterBluetoothSerial bluetoothSerial =
+      FlutterBluetoothSerial.instance;
+  BluetoothConnection? _connection;
 
   /// Stream of connected (bonded) devices
   Stream<List<BluetoothDevice>> get connectedDevices async* {
@@ -10,8 +14,39 @@ class BluetoothServiceClass {
       final bondedDevices = await bluetoothSerial.getBondedDevices();
       yield bondedDevices;
     } catch (e) {
-      print("Error fetching connected devices: $e");
+      if (kDebugMode) {
+        print("Error fetching connected devices: $e");
+      }
       yield [];
+    }
+  }
+
+  Future<void> ensureBluetoothIsOn(void Function(bool) statusCallBack) async {
+    // Check if Bluetooth is enabled
+    bool isEnabled = await FlutterBluetoothSerial.instance.isEnabled ?? false;
+
+    if (!isEnabled) {
+      // Request to enable Bluetooth
+      bool? isNowEnabled =
+          await FlutterBluetoothSerial.instance.requestEnable();
+
+      if (isNowEnabled == true) {
+        statusCallBack(true);
+        if (kDebugMode) {
+          print("Bluetooth has been enabled.");
+        }
+      } else {
+        statusCallBack(false);
+
+        if (kDebugMode) {
+          print("Bluetooth is still disabled.");
+        }
+      }
+    } else {
+      statusCallBack(true);
+      if (kDebugMode) {
+        print("Bluetooth is already enabled.");
+      }
     }
   }
 
@@ -23,7 +58,9 @@ class BluetoothServiceClass {
         yield [result]; // Emit results as they are discovered
       }
     } catch (e) {
-      print("Error during device scanning: $e");
+      if (kDebugMode) {
+        print("Error during device scanning: $e");
+      }
       yield [];
     }
   }
@@ -33,33 +70,69 @@ class BluetoothServiceClass {
     try {
       bluetoothSerial.cancelDiscovery();
     } catch (e) {
-      print("Error stopping device discovery: $e");
+      if (kDebugMode) {
+        print("Error stopping device discovery: $e");
+      }
     }
   }
 
   /// Connect to a Bluetooth device
-  Future<void> connectToDevice(BluetoothDevice device) async {
+  Future<void> connectToDevice(ConnectableDevice device,void Function(bool) successCallBack) async {
     try {
-      final connection = await BluetoothConnection.toAddress(device.address);
-      print('Connected to the device: ${device.name}');
+      _connection = await BluetoothConnection.toAddress(device.deviceAddress);
+      successCallBack(true);
+      if (kDebugMode) {
+        print('Connected to the device: ${device.deviceName}');
+      }
       // Handle connection logic (e.g., communication or streaming data)
     } catch (e) {
-      print("Error connecting to device: ${device.name} (${device.address}) - $e");
+      successCallBack(false);
+
+      if (kDebugMode) {
+        print(
+            "Error connecting to device: ${device.deviceName} (${device.deviceAddress}) - $e");
+      }
     }
   }
 
   /// Disconnect from a Bluetooth device
-  Future<void> disconnectDevice(BluetoothDevice device) async {
+  Future<void> disconnectDevice(ConnectableDevice device) async {
     try {
       // flutter_bluetooth_serial does not track active connections, so this depends on your app's logic
-      print('Disconnected from device: ${device.name}');
+      if (kDebugMode) {
+        print('Disconnected from device: ${device.deviceName}');
+      }
       // Implement custom disconnection logic if needed
     } catch (e) {
-      print("Error disconnecting from device: ${device.name} (${device.address}) - $e");
+      if (kDebugMode) {
+        print(
+            "Error disconnecting from device: ${device.deviceName} (${device.deviceAddress}) - $e");
+      }
     }
   }
 
+  void sendData(String data, void Function(bool) callBack) {
+    print('Connection state: ${_connection!.isConnected}');
 
+    if (_connection != null && _connection!.isConnected) {
+      _connection!.output.add(Uint8List.fromList(data.codeUnits));
+      print('Data being sent: $data');
+
+
+      _connection!.output.allSent.then((_) {
+        callBack(true);
+        if (kDebugMode) {
+          print('Data sent successfully.');
+        }
+      });
+    } else {
+      callBack(false);
+
+      if (kDebugMode) {
+        print('No connection established.');
+      }
+    }
+  }
 }
 
 final bluetoothServiceProvider = Provider<BluetoothServiceClass>((ref) {

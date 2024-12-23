@@ -47,7 +47,7 @@ class LandingScreen extends ConsumerWidget {
                         img: "assets/icons/horn_icon.png",
                         text: "Play Horn",
                         onPress: () {
-                          navigateToScreen(context, BluetoothDevicesWidget());
+                          navigateToScreen(context, const BluetoothDevicesWidget());
                         }),
                     SizedBox(
                       height: 20.h,
