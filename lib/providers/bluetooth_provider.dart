@@ -10,12 +10,18 @@ import '../core/utils/services/bluetooth_service.dart';
 class BluetoothNotifier extends StateNotifier<BluetoothConnectivityState> {
   BluetoothNotifier(this._service)
       : super(BluetoothConnectivityState(
-          devices: [],
-          isPermissionGranted: false,
-          isDeviceConnected: false,
-          errorMessage: "",
-          successMessage: "",
-        ));
+            devices: [],
+            isPermissionGranted: false,
+            isDeviceConnected: false,
+            isScanning: false,
+            errorMessage: "",
+            successMessage: "",
+            connectedDeviceName: "",
+            myOwnDevice: "",
+            isConnecting: false,
+            isBluetoothOn: false,
+            isSendingData: false,
+            connectingDeviceAddress: ''));
 
   final FlutterBluetoothSerial bluetoothSerial =
       FlutterBluetoothSerial.instance;
@@ -25,6 +31,7 @@ class BluetoothNotifier extends StateNotifier<BluetoothConnectivityState> {
     if (await Permission.bluetoothScan.isGranted &&
         await Permission.bluetoothConnect.isGranted &&
         await Permission.location.isGranted) {
+      state = state.copyWith(isPermissionGranted: true);
       if (kDebugMode) {
         print("All required permissions granted.");
       }
@@ -37,12 +44,27 @@ class BluetoothNotifier extends StateNotifier<BluetoothConnectivityState> {
     }
   }
 
+  void getDeviceName() async {
+    String bluetoothName = "";
+    try {
+      String? name = await FlutterBluetoothSerial.instance.name;
+      bluetoothName = name ?? "Unknown Bluetooth Name";
+      if (kDebugMode) {
+        print("device name=>>>>>>>>> $bluetoothName");
+      }
+    } catch (e) {
+      bluetoothName = "Failed to fetch Bluetooth name: $e";
+    }
+    state = state.copyWith(myOwnDevice: bluetoothName);
+  }
+
   /// Start scanning for Bluetooth devices
   void scanForDevices() async {
     await requestPermissions();
 
     isBlueToothTurnOn((isOn) {
       if (isOn) {
+        state = state.copyWith(isBluetoothOn: true, isScanning: true);
         bluetoothSerial
             .startDiscovery()
             .listen((BluetoothDiscoveryResult result) {
@@ -67,6 +89,7 @@ class BluetoothNotifier extends StateNotifier<BluetoothConnectivityState> {
             print("Discovered device: ${device.name} (${device.address})");
           }
         }).onDone(() {
+          state = state.copyWith(isScanning: false);
           if (kDebugMode) {
             print("Discovery complete.");
           }
@@ -78,27 +101,51 @@ class BluetoothNotifier extends StateNotifier<BluetoothConnectivityState> {
   }
 
   /// Stop scanning for devices (not directly supported by flutter_bluetooth_serial)
+  /// Stop scanning for devices and turn off Bluetooth
   Future<void> stopScanning() async {
-    bluetoothSerial.cancelDiscovery();
-    if (kDebugMode) {
-      print("Scanning canceled.");
+    try {
+      // Cancel the ongoing discovery process
+      await bluetoothSerial.cancelDiscovery();
+      resetState(); // Reset the state of the notifier
+
+      // Turn off Bluetooth
+      bool? isDisabled = await bluetoothSerial.requestDisable();
+      if (isDisabled == true) {
+        state = state.copyWith(isBluetoothOn: false);
+        if (kDebugMode) {
+          print("Bluetooth has been turned off.");
+        }
+      } else {
+        if (kDebugMode) {
+          print("Failed to turn off Bluetooth.");
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error stopping scanning or disabling Bluetooth: $e");
+      }
     }
   }
 
-  /// Connect to a specific device
   Future<void> connectToDevice(ConnectableDevice device) async {
-     await disconnectDevice(device);
+    state = state.copyWith(
+        isConnecting: true, connectingDeviceAddress: device.deviceAddress);
 
+    await disconnectDevice(device);
     try {
-      _service.connectToDevice(device, (flag) {
+      await _service.connectToDevice(device, (flag) {
         if (flag) {
-          state = state.copyWith(isDeviceConnected: true);
+          state = state.copyWith(
+            isDeviceConnected: true,
+            connectedDeviceName: device.deviceName,
+            devices: state.devices
+                .where((d) => d.deviceAddress != device.deviceAddress)
+                .toList(), // Remove the connected device from the list
+          );
         } else {
           setError("Connection Failed");
         }
       });
-
-      // Handle connection logic or stream if required
     } catch (e) {
       setError("Connection Failed");
 
@@ -106,10 +153,11 @@ class BluetoothNotifier extends StateNotifier<BluetoothConnectivityState> {
         print(
             "Error connecting to device: ${device.deviceName} (${device.deviceAddress}) - $e");
       }
+    } finally {
+      state = state.copyWith(isConnecting: false);
     }
   }
 
-  /// Disconnect from a specific device
   Future<void> disconnectDevice(ConnectableDevice device) async {
     // flutter_bluetooth_serial does not keep a direct connection list, so manage manually
     try {
@@ -127,6 +175,12 @@ class BluetoothNotifier extends StateNotifier<BluetoothConnectivityState> {
   }
 
   Future<void> sendData(String data) async {
+    setSendingData(true);
+    if (kDebugMode) {
+      print("Sending data: $data, isSendingData: ${state.isSendingData}");
+    } // Debug log
+    await Future.delayed(const Duration(seconds: 2));
+
     _service.sendData(data, (flag) {
       if (flag) {
         setSuccess("Sent");
@@ -134,6 +188,8 @@ class BluetoothNotifier extends StateNotifier<BluetoothConnectivityState> {
         setError("Data not sent");
       }
     });
+    setSendingData(false);
+    // Debug log
   }
 
   void isBlueToothTurnOn(void Function(bool) statusCallBack) {
@@ -150,13 +206,40 @@ class BluetoothNotifier extends StateNotifier<BluetoothConnectivityState> {
     state = state.copyWith(successMessage: message);
   }
 
+  void setScanning(bool isScanning) {
+    state = state.copyWith(
+      isScanning: isScanning,
+    );
+  }
+
+  void setBluetoothOn(bool isBluetoothOn) {
+    state = state.copyWith(
+      isBluetoothOn: isBluetoothOn,
+    );
+  }
+
+  void setConnecting(bool isConnecting) {
+    state = state.copyWith(isConnecting: isConnecting);
+  }
+
+  void setSendingData(bool isSendingData) {
+    state = state.copyWith(isSendingData: isSendingData);
+  }
+
   void resetState() {
     state = BluetoothConnectivityState(
         devices: [],
         isDeviceConnected: false,
         errorMessage: "",
         successMessage: "",
-        isPermissionGranted: false);
+        isPermissionGranted: false,
+        connectedDeviceName: "",
+        myOwnDevice: "",
+        isConnecting: false,
+        isScanning: false,
+        isBluetoothOn: false,
+        isSendingData: false,
+        connectingDeviceAddress: '');
   }
 }
 

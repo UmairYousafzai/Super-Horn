@@ -77,21 +77,25 @@ class BluetoothServiceClass {
   }
 
   /// Connect to a Bluetooth device
-  Future<void> connectToDevice(ConnectableDevice device,void Function(bool) successCallBack) async {
+  Future<void> connectToDevice(
+      ConnectableDevice device, void Function(bool) successCallBack) async {
     try {
+      if (kDebugMode) {
+        print('Connecting to device: ${device.deviceName}');
+      }
+      _connection?.close();
+      Future.delayed(const Duration(seconds: 2));
       _connection = await BluetoothConnection.toAddress(device.deviceAddress);
-      successCallBack(true);
       if (kDebugMode) {
         print('Connected to the device: ${device.deviceName}');
       }
-      // Handle connection logic (e.g., communication or streaming data)
+      successCallBack(true);
     } catch (e) {
-      successCallBack(false);
-
       if (kDebugMode) {
         print(
             "Error connecting to device: ${device.deviceName} (${device.deviceAddress}) - $e");
       }
+      successCallBack(false);
     }
   }
 
@@ -117,7 +121,6 @@ class BluetoothServiceClass {
     if (_connection != null && _connection!.isConnected) {
       _connection!.output.add(Uint8List.fromList(data.codeUnits));
       print('Data being sent: $data');
-
 
       _connection!.output.allSent.then((_) {
         callBack(true);

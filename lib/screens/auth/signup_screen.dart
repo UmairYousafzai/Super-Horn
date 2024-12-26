@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:superhorn/providers/shared_pref_provider.dart';
-import 'package:superhorn/screens/homescreen.dart';
+import 'package:superhorn/screens/landing_screen.dart';
 
 import '../../core/theme/colors.dart';
 import '../../core/utils/navigations.dart';
@@ -171,11 +171,11 @@ class SignupScreen extends ConsumerWidget {
                     SizedBox(height: 50.h),
                     primaryButton(
                         context,
-                        const Text(
+                        Text(
                           "Get Started",
                           style: TextStyle(
                               fontFamily: 'Poppins',
-                              fontSize: 20,
+                              fontSize: 18.sp,
                               color: Colors.white),
                         ), () async {
                       if (signupState.email.isNotEmpty &&
@@ -202,7 +202,7 @@ class SignupScreen extends ConsumerWidget {
                                 "--------------------User save successfully--------------");
                           }
                           navigatePushAndRemoveUntil(
-                              context, Homescreen(), false);
+                              context, const LandingScreen(), false);
                         });
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
