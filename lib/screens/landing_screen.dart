@@ -55,7 +55,7 @@ class LandingScreen extends ConsumerWidget {
                               color: Colors.white,
                               fontWeight: FontWeight.w500),
                         ), () {
-                      navigateToScreen(context, Homescreen());
+                      navigateToScreen(context, Homescreen(false));
                     })
                   ],
                 ),

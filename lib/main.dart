@@ -38,9 +38,7 @@ class MyApp extends ConsumerWidget {
             ),
           );
         }
-
         final userExists = snapshot.data ?? false;
-
         return ScreenUtilInit(
           designSize:
               const Size(375, 812), // Replace with your design screen size

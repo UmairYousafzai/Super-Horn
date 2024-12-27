@@ -9,7 +9,7 @@ import 'package:superhorn/screens/widgets/background_image_container.dart';
 
 import '../core/theme/colors.dart';
 import '../providers/bluetooth_provider.dart';
-import '../providers/device_sound_provider.dart';
+import '../providers/sound_provider.dart';
 
 class PlayHornWithBluetooth extends ConsumerStatefulWidget {
   const PlayHornWithBluetooth({super.key});
@@ -24,15 +24,14 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
   AnimationController? _animationController;
   bool _isAnimating = true;
   Ticker? _ticker; // Add a ticker
-  final ScrollController _scrollController = ScrollController();
+  ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-
+    _scrollController = ScrollController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final soundState = ref.watch(deviceSoundProvider);
-      _scrollToIndex(deviceSounds.indexOf(soundState.toString()));
+      _scrollToIndex(ref.watch(soundSelectionProvider));
     });
     _animationController = AnimationController(
       vsync: this,
@@ -40,8 +39,8 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
     )..repeat();
 
     Future(() {
-      final number = ref.watch(deviceSoundProvider);
-      ref.read(bluetoothNotifierProvider.notifier).sendData(number.toString());
+      final bluetoothNotifier = ref.read(bluetoothNotifierProvider.notifier);
+      bluetoothNotifier.sendData(ref.watch(currentSoundProvider).id.toString());
     });
   }
 
@@ -67,8 +66,9 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
   Widget build(BuildContext context) {
     final bluetoothNotifier = ref.read(bluetoothNotifierProvider.notifier);
     final bluetoothState = ref.watch(bluetoothNotifierProvider);
-    final soundState = ref.watch(deviceSoundProvider);
-    final soundNotifier = ref.read(deviceSoundProvider.notifier);
+    final currentSound = ref.watch(currentSoundProvider);
+    final soundNotifier = ref.read(soundSelectionProvider.notifier);
+    final soundList = ref.watch(soundListProvider);
 
     return GestureDetector(
       onTap: () {
@@ -102,7 +102,7 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
                       height: 16.h,
                     ),
                     Text(
-                      "Sound $soundState",
+                      currentSound.soundName,
                       overflow: TextOverflow.ellipsis,
                       // Adds ellipsis when text overflows
                       style: TextStyle(
@@ -128,50 +128,45 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
                     ),
                     Expanded(
                       child: ListView.builder(
-                        controller: _scrollController, // Add a ScrollController
-                        scrollDirection:
-                            Axis.horizontal, // Key for horizontal scrolling
+                        controller: _scrollController,
+                        scrollDirection: Axis.horizontal,
                         itemCount: deviceSounds.length,
                         itemBuilder: (context, index) {
-                          final currentSound = deviceSounds[index];
+                          final sound = soundList[index];
                           final bool isSelected =
-                              currentSound == soundState.toString();
+                              index == ref.watch(soundSelectionProvider);
+
                           return GestureDetector(
                             onTap: () {
-                              final int soundNumber =
-                                  int.parse(deviceSounds[index]);
-                              ref
-                                  .read(deviceSoundProvider.notifier)
-                                  .setSound(soundNumber);
-                              bluetoothNotifier
-                                  .sendData(soundNumber.toString());
+                              soundNotifier.selectSound(index);
+                              final currentSound =
+                                  ref.watch(currentSoundProvider);
+                              bluetoothNotifier.sendData(
+                                currentSound.id.toString(),
+                              );
                             },
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 6),
-                              child: Container(
-                                height: isSelected ? 60.h : 50.h,
-                                width: isSelected ? 60.h : 50.w,
-                                decoration: BoxDecoration(
+                            child: Container(
+                              margin: EdgeInsets.symmetric(horizontal: 8.w),
+                              height: isSelected ? 60.h : 50.h,
+                              width: isSelected ? 60.h : 50.w,
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? AColors.primaryColor
+                                    : Colors.white,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  sound.id.toString(),
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontSize: isSelected ? 28.sp : 16.sp,
                                     color: isSelected
-                                        ? AColors.primaryColor
-                                        : Colors.white,
-                                    shape: BoxShape.circle),
-                                child: Center(
-                                  child: Text(
-                                    deviceSounds[index],
-                                    overflow: TextOverflow.ellipsis,
-                                    // Adds ellipsis when text overflows
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      fontSize: isSelected ? 28.sp : 16.sp,
-                                      color: isSelected
-                                          ? Colors.white
-                                          : Colors.black,
-                                      fontWeight: isSelected
-                                          ? FontWeight.w700
-                                          : FontWeight.w500,
-                                    ),
+                                        ? Colors.white
+                                        : Colors.black,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w700
+                                        : FontWeight.w500,
                                   ),
                                 ),
                               ),
@@ -190,13 +185,14 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
                           children: [
                             IconButton(
                                 onPressed: () {
-                                  soundNotifier.decrement();
-                                  final soundState =
-                                      ref.watch(deviceSoundProvider);
-                                  bluetoothNotifier
-                                      .sendData(soundState.toString());
-                                  _scrollToIndex(deviceSounds
-                                      .indexOf(soundState.toString()));
+                                  soundNotifier.previous();
+                                  final currentSound =
+                                      ref.watch(currentSoundProvider);
+                                  bluetoothNotifier.sendData(
+                                    currentSound.id.toString(),
+                                  );
+                                  _scrollToIndex(
+                                      ref.watch(soundSelectionProvider));
                                 },
                                 icon: Icon(
                                   Icons.skip_previous_rounded,
@@ -226,17 +222,8 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
                               if (_isAnimating) {
                                 _animationController!.repeat();
                               } else {
-                                _ticker = Ticker((_) {
-                                  _animationController!.reset();
-                                  _ticker!
-                                      .dispose(); // Dispose of the ticker after reset
-                                  _ticker = null;
-                                });
+                                _ticker = Ticker((_) {});
                                 _ticker!.start();
-                                if (_animationController?.isAnimating ??
-                                    false) {
-                                  _animationController?.stop();
-                                }
                               }
                             });
                           },
@@ -254,13 +241,14 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
                           children: [
                             IconButton(
                                 onPressed: () {
-                                  soundNotifier.increment();
-                                  final soundState =
-                                      ref.watch(deviceSoundProvider);
-                                  bluetoothNotifier
-                                      .sendData(soundState.toString());
-                                  _scrollToIndex(deviceSounds
-                                      .indexOf(soundState.toString()));
+                                  soundNotifier.next();
+                                  final currentSound =
+                                      ref.watch(currentSoundProvider);
+                                  bluetoothNotifier.sendData(
+                                    currentSound.id.toString(),
+                                  );
+                                  _scrollToIndex(
+                                      ref.watch(soundSelectionProvider));
                                 },
                                 icon: Icon(
                                   Icons.skip_next_rounded,
@@ -287,11 +275,16 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
                     ),
                     GestureDetector(
                       onTap: () {
-                        soundNotifier.reset();
-                        final soundState = ref.watch(deviceSoundProvider);
-                        bluetoothNotifier.sendData(soundState.toString());
-                        _scrollToIndex(
-                            deviceSounds.indexOf(soundState.toString()));
+                        soundNotifier.selectSound(0);
+                        final currentSound = ref.watch(currentSoundProvider);
+                        bluetoothNotifier.resetData(
+                          currentSound.id.toString(),
+                        );
+                        setState(() {
+                          _isAnimating = false;
+                          _animationController?.stop();
+                        });
+                        _scrollToIndex(0);
                       },
                       child: Text(
                         "Reset",
@@ -325,7 +318,30 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
                     ),
                     SizedBox(height: 20.h),
                     const Text(
-                      "Sending Data...",
+                      "Playing Sound...",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          if (bluetoothState.isResettingData)
+            Container(
+              color: Colors.white.withOpacity(0.5), // Semi-transparent overlay
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(
+                      color: AColors.primaryColor,
+                    ),
+                    SizedBox(height: 20.h),
+                    const Text(
+                      "Resetting...",
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 18,

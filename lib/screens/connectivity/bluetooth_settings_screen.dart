@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:superhorn/screens/device_sound_screen.dart';
+import 'package:superhorn/screens/homescreen.dart';
 import 'package:superhorn/screens/widgets/background_image_container.dart';
 
 import '../../core/theme/colors.dart';
@@ -40,7 +40,7 @@ class _BluetoothSettingsScreenState
         await Future.delayed(const Duration(milliseconds: 1000));
         navigatePushAndRemoveUntil(
           context,
-          const DeviceSoundScreen(),
+          Homescreen(true),
           true,
         );
       }

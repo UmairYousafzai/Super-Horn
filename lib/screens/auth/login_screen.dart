@@ -159,7 +159,7 @@ class LoginScreen extends ConsumerWidget {
                               loginState.password.isNotEmpty &&
                               loginState.emailError!.isEmpty &&
                               loginState.passwordError!.isEmpty) {
-                            navigatePushReplacement(context, Homescreen());
+                            navigatePushReplacement(context, Homescreen(false));
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
