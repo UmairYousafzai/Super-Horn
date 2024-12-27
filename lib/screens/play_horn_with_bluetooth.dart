@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
 import 'package:superhorn/core/utils/media_query_extension.dart';
-import 'package:superhorn/data/data_source/local/device_sound_data.dart';
 import 'package:superhorn/screens/widgets/background_image_container.dart';
 
 import '../core/theme/colors.dart';
@@ -45,7 +44,9 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
   }
 
   void _scrollToIndex(int index) {
-    if (index >= 0 && index < deviceSounds.length) {
+    final soundList = ref.watch(soundListProvider);
+
+    if (index >= 0 && index < soundList.length) {
       _scrollController.animateTo(
         index * 62.w, // Adjust 56 based on your item width + padding
         duration: const Duration(milliseconds: 300),
@@ -130,7 +131,7 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
                       child: ListView.builder(
                         controller: _scrollController,
                         scrollDirection: Axis.horizontal,
-                        itemCount: deviceSounds.length,
+                        itemCount: soundList.length,
                         itemBuilder: (context, index) {
                           final sound = soundList[index];
                           final bool isSelected =
