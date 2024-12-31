@@ -13,6 +13,7 @@ class BluetoothConnectivityState {
   bool isBluetoothOn;
   bool isSendingData;
   bool isResettingData;
+  bool isAnimating;
   String connectingDeviceAddress;
 
   BluetoothConnectivityState(
@@ -28,7 +29,8 @@ class BluetoothConnectivityState {
       required this.isBluetoothOn,
       required this.isSendingData,
       required this.connectingDeviceAddress,
-      required this.isResettingData});
+      required this.isResettingData,
+      required this.isAnimating});
 
   BluetoothConnectivityState copyWith({
     List<ConnectableDevice>? devices,
@@ -43,6 +45,7 @@ class BluetoothConnectivityState {
     bool? isBluetoothOn,
     bool? isSendingData,
     bool? isResettingData,
+    bool? isAnimating,
     String? connectingDeviceAddress, // Allow updating this field
   }) {
     return BluetoothConnectivityState(
@@ -57,6 +60,7 @@ class BluetoothConnectivityState {
         isConnecting: isConnecting ?? this.isConnecting,
         isBluetoothOn: isBluetoothOn ?? this.isBluetoothOn,
         isSendingData: isSendingData ?? this.isSendingData,
+        isAnimating: isAnimating ?? this.isAnimating,
         connectingDeviceAddress:
             connectingDeviceAddress ?? this.connectingDeviceAddress,
         isResettingData: isResettingData ?? this.isResettingData);

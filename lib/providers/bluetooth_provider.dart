@@ -22,6 +22,7 @@ class BluetoothNotifier extends StateNotifier<BluetoothConnectivityState> {
             isBluetoothOn: false,
             isSendingData: false,
             isResettingData: false,
+            isAnimating: false,
             connectingDeviceAddress: ''));
 
   final FlutterBluetoothSerial bluetoothSerial =
@@ -176,6 +177,7 @@ class BluetoothNotifier extends StateNotifier<BluetoothConnectivityState> {
   }
 
   Future<void> sendData(String data) async {
+    setAnimating(false);
     setSendingData(true);
     if (kDebugMode) {
       print("Sending data: $data, isSendingData: ${state.isSendingData}");
@@ -190,6 +192,7 @@ class BluetoothNotifier extends StateNotifier<BluetoothConnectivityState> {
       }
     });
     setSendingData(false);
+    setAnimating(true);
     // Debug log
   }
 
@@ -249,6 +252,10 @@ class BluetoothNotifier extends StateNotifier<BluetoothConnectivityState> {
     state = state.copyWith(isResettingData: isResetting);
   }
 
+  void setAnimating(bool isAnimating) {
+    state = state.copyWith(isAnimating: isAnimating);
+  }
+
   void resetState() {
     state = BluetoothConnectivityState(
         devices: [],
@@ -263,6 +270,7 @@ class BluetoothNotifier extends StateNotifier<BluetoothConnectivityState> {
         isBluetoothOn: false,
         isSendingData: false,
         isResettingData: false,
+        isAnimating: false,
         connectingDeviceAddress: '');
   }
 }

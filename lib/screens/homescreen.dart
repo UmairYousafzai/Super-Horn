@@ -331,15 +331,17 @@ class _HomescreenState extends ConsumerState<Homescreen> {
                                         ),
                                       ),
                                       //SizedBox(height: 5.h),
-                                      Text(
-                                        _filteredSounds[index].category,
-                                        style: TextStyle(
-                                          fontFamily: 'Poppins',
-                                          fontSize: 11.sp,
-                                          color: Colors.black.withOpacity(0.6),
-                                          fontWeight: FontWeight.w400,
+                                      if (widget.isComingFromPlayOption != true)
+                                        Text(
+                                          _filteredSounds[index].category,
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins',
+                                            fontSize: 11.sp,
+                                            color:
+                                                Colors.black.withOpacity(0.6),
+                                            fontWeight: FontWeight.w400,
+                                          ),
                                         ),
-                                      ),
                                     ],
                                   ),
                                   const Spacer(),

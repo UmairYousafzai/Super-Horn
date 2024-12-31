@@ -34,24 +34,31 @@ class LandingScreen extends ConsumerWidget {
                       width: 250.w,
                     ),
                     SizedBox(
-                      height: 30.h,
-                    ),
-                    WhiteContainerButton(
-                        img: "assets/icons/horn_icon.png",
-                        text: "Play Horn",
-                        onPress: () async {
-                          navigateToScreen(
-                              context, const BluetoothSettingsScreen());
-                        }),
-                    SizedBox(
-                      height: 20.h,
+                      height: 70.h,
                     ),
                     primaryButton(
                         context,
-                        const Text(
+                        Text(
+                          'Play Horn',
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: Colors.white,
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w500),
+                        ), () {
+                      navigateToScreen(
+                          context, const BluetoothSettingsScreen());
+                    }),
+                    SizedBox(
+                      height: 25.h,
+                    ),
+                    primaryButton(
+                        context,
+                        Text(
                           'Place Your Order',
                           style: TextStyle(
                               fontFamily: 'Poppins',
+                              fontSize: 16.sp,
                               color: Colors.white,
                               fontWeight: FontWeight.w500),
                         ), () {

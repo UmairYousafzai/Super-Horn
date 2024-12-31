@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
 import 'package:superhorn/core/utils/media_query_extension.dart';
 import 'package:superhorn/screens/widgets/background_image_container.dart';
+import 'package:superhorn/screens/widgets/horns_animation_widget.dart';
 
 import '../core/theme/colors.dart';
 import '../providers/bluetooth_provider.dart';
@@ -19,7 +20,7 @@ class PlayHornWithBluetooth extends ConsumerStatefulWidget {
 }
 
 class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   AnimationController? _animationController;
   bool _isAnimating = true;
   Ticker? _ticker; // Add a ticker
@@ -58,7 +59,7 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
   @override
   void dispose() {
     _scrollController.dispose(); // Dispose of the ScrollController
-    _animationController?.dispose(); // Dispose of the AnimationController
+    _animationController?.dispose();
     _ticker?.dispose(); // Dispose of the Ticker if it exists
     super.dispose();
   }
@@ -70,6 +71,15 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
     final currentSound = ref.watch(currentSoundProvider);
     final soundNotifier = ref.read(soundSelectionProvider.notifier);
     final soundList = ref.watch(soundListProvider);
+
+    // Manage Lottie animation state dynamically
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (bluetoothState.isAnimating) {
+        _animationController?.repeat();
+      } else {
+        _animationController?.stop();
+      }
+    });
 
     return GestureDetector(
       onTap: () {
@@ -115,6 +125,19 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
                     ),
                     SizedBox(
                       height: 10.h,
+                    ),
+                    Expanded(
+                      child: Center(
+                        child: Transform.scale(
+                          scale: 0.7,
+                          child: SizedBox(
+                            width: context.mqW(0.8),
+                            // Adjust this width to match the total width of your ImageRowWidget
+                            child: ImageRowWidget(
+                                isAnimating: bluetoothState.isAnimating),
+                          ),
+                        ),
+                      ),
                     ),
                     Text(
                       "Now Playing",
@@ -221,10 +244,9 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
                             setState(() {
                               _isAnimating = !_isAnimating;
                               if (_isAnimating) {
-                                _animationController!.repeat();
+                                _animationController?.forward();
                               } else {
-                                _ticker = Ticker((_) {});
-                                _ticker!.start();
+                                _animationController?.stop();
                               }
                             });
                           },
@@ -233,6 +255,13 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
                             width: 80.w,
                             "assets/animation/play_animation.json",
                             controller: _animationController,
+                            onLoaded: (composition) {
+                              _animationController?.duration =
+                                  composition.duration;
+                              if (bluetoothState.isAnimating) {
+                                _animationController?.repeat();
+                              }
+                            },
                           ),
                         ),
                         SizedBox(
@@ -281,6 +310,7 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
                         bluetoothNotifier.resetData(
                           currentSound.id.toString(),
                         );
+                        bluetoothNotifier.setAnimating(false);
                         setState(() {
                           _isAnimating = false;
                           _animationController?.stop();
