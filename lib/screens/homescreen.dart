@@ -1,7 +1,7 @@
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:superhorn/screens/play_horn_with_bluetooth.dart';
 import 'package:superhorn/screens/widgets/screen_background_container.dart';
 import 'package:superhorn/screens/widgets/search_field_widget.dart';
@@ -27,19 +27,21 @@ class _HomescreenState extends ConsumerState<Homescreen> {
   final AudioPlayer _audioPlayer = AudioPlayer();
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
-  bool _isSearchActive = false; // Tracks whether the search field is active
-  int? _currentlyPlayingIndex; //To Track current playing sound
-  List<Sound> _filteredSounds = []; //List that contains the filtered searches
-  String _selectedCategory = "All"; // Default category is 'All'
+  bool _isSearchActive = false;
+  int? _currentlyPlayingIndex;
+  List<Sound> _filteredSounds = [];
+  String _selectedCategory = "All";
 
   @override
   void initState() {
     super.initState();
-    assignHornSounds(); // Call this before the app starts
-    _audioPlayer.onPlayerComplete.listen((event) {
-      setState(() {
-        _currentlyPlayingIndex = null;
-      });
+    assignHornSounds();
+    _audioPlayer.playerStateStream.listen((playerState) {
+      if (playerState.processingState == ProcessingState.completed) {
+        setState(() {
+          _currentlyPlayingIndex = null;
+        });
+      }
     });
     final soundList = ref.read(soundListProvider);
     _filteredSounds = List.from(soundList);
@@ -61,8 +63,7 @@ class _HomescreenState extends ConsumerState<Homescreen> {
 
     setState(() {
       _filteredSounds = soundList.where((sound) {
-        final isValidSound =
-            sound.hornSound != null; // Check if hornSound is assigned
+        final isValidSound = sound.hornSound != null;
         return isValidSound &&
             (sound.soundName.toLowerCase().contains(query) ||
                 sound.category.toLowerCase().contains(query)) &&
@@ -76,7 +77,7 @@ class _HomescreenState extends ConsumerState<Homescreen> {
   void _setCategoryFilter(String category) {
     setState(() {
       _selectedCategory = category;
-      _filterSounds(); // Reapply the filter
+      _filterSounds();
     });
   }
 
@@ -92,20 +93,35 @@ class _HomescreenState extends ConsumerState<Homescreen> {
         _currentlyPlayingIndex = null;
       });
     } else {
-      await _audioPlayer.play(AssetSource('sounds/$soundFile'));
+      // Stop any currently playing audio
+      await _audioPlayer.stop();
+      // Set the state before playing to immediately show pause button
       setState(() {
         _currentlyPlayingIndex = index;
       });
+      // Load and play the new audio file
+      try {
+        await _audioPlayer.setAsset('assets/sounds/$soundFile');
+        await _audioPlayer.play();
+      } catch (e) {
+        // If there's an error, reset the state
+        setState(() {
+          _currentlyPlayingIndex = null;
+        });
+        print("Error playing sound: $e");
+      }
     }
   }
 
+  // Rest of the widget code remains exactly the same...
   @override
   Widget build(BuildContext context) {
+    // Your existing build method remains unchanged
     final soundNotifier = ref.read(soundSelectionProvider.notifier);
     final checkedItems = ref.watch(checkedItemsProvider);
 
     bool isAllSelected = checkedItems.length == _filteredSounds.length &&
-        _filteredSounds.isNotEmpty; // Determines "Select All" state
+        _filteredSounds.isNotEmpty;
 
     return GestureDetector(
       onTap: () {
@@ -131,7 +147,7 @@ class _HomescreenState extends ConsumerState<Homescreen> {
                 ),
                 backgroundColor: Colors.transparent,
                 iconTheme: IconThemeData(
-                  size: 32.h, // Adjust the size here
+                  size: 32.h,
                 ),
                 actions: [
                   Padding(
@@ -139,8 +155,7 @@ class _HomescreenState extends ConsumerState<Homescreen> {
                     child: PopupMenuButton<String>(
                       child: Image.asset(
                         'assets/icons/filter_icon.png',
-                        // Replace with your image path
-                        width: 24, // Adjust size as needed
+                        width: 24,
                         height: 24,
                       ),
                       itemBuilder: (context) => [
@@ -213,8 +228,7 @@ class _HomescreenState extends ConsumerState<Homescreen> {
                               IconButton(
                                 onPressed: () {
                                   setState(() {
-                                    _isSearchActive =
-                                        true; // Activate search field
+                                    _isSearchActive = true;
                                   });
                                 },
                                 icon: Image.asset(
@@ -309,7 +323,6 @@ class _HomescreenState extends ConsumerState<Homescreen> {
                                       Text(
                                         _filteredSounds[index].soundName,
                                         overflow: TextOverflow.ellipsis,
-                                        // Adds ellipsis when text overflows
                                         style: TextStyle(
                                           fontFamily: 'Poppins',
                                           fontSize: 14.sp,
@@ -317,12 +330,9 @@ class _HomescreenState extends ConsumerState<Homescreen> {
                                           fontWeight: FontWeight.w400,
                                         ),
                                       ),
-                                      // SizedBox(height: 5.h),
                                       Text(
                                         "(${_filteredSounds[index].code})",
                                         overflow: TextOverflow.ellipsis,
-                                        // Adds ellipsis when text overflows
-
                                         style: TextStyle(
                                           fontFamily: 'Poppins',
                                           fontSize: 11.sp,
@@ -330,7 +340,6 @@ class _HomescreenState extends ConsumerState<Homescreen> {
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
-                                      //SizedBox(height: 5.h),
                                       if (widget.isComingFromPlayOption != true)
                                         Text(
                                           _filteredSounds[index].category,
@@ -358,7 +367,6 @@ class _HomescreenState extends ConsumerState<Homescreen> {
                                                   .id
                                                   .toString(),
                                               overflow: TextOverflow.ellipsis,
-                                              // Adds ellipsis when text overflows
                                               style: TextStyle(
                                                 fontFamily: 'Poppins',
                                                 fontSize: 12.sp,
@@ -373,8 +381,6 @@ class _HomescreenState extends ConsumerState<Homescreen> {
                                           checkColor: Colors.white,
                                           activeColor: AColors.primaryColor
                                               .withOpacity(0.8),
-                                          // Set the fill color (background when checked)
-
                                           onChanged: (bool? value) {
                                             if (value != null) {
                                               ref
