@@ -1,3 +1,5 @@
+import 'package:android_intent_plus/android_intent.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,11 +40,16 @@ class BluetoothNotifier extends StateNotifier<BluetoothConnectivityState> {
         print("All required permissions granted.");
       }
     } else {
-      await [
+      var statuses = await [
         Permission.bluetoothScan,
         Permission.bluetoothConnect,
-        Permission.location
+        Permission.location,
       ].request();
+
+      if (statuses.values.any((status) => !status.isGranted)) {
+        // Navigate to app settings directly
+        await openAppSettings();
+      }
     }
   }
 
@@ -102,8 +109,6 @@ class BluetoothNotifier extends StateNotifier<BluetoothConnectivityState> {
     });
   }
 
-  /// Stop scanning for devices (not directly supported by flutter_bluetooth_serial)
-  /// Stop scanning for devices and turn off Bluetooth
   Future<void> stopScanning() async {
     try {
       // Cancel the ongoing discovery process
@@ -122,9 +127,50 @@ class BluetoothNotifier extends StateNotifier<BluetoothConnectivityState> {
           print("Failed to turn off Bluetooth.");
         }
       }
+
+      // Check Android version and navigate to Bluetooth settings if needed
+      DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        AndroidDeviceInfo androidInfo = await deviceInfoPlugin.androidInfo;
+        // Debug: Check what Android version you are getting
+        if (kDebugMode) {
+          print("Android SDK version: ${androidInfo.version.sdkInt}");
+        }
+
+        // If Android version is greater than 12, navigate to Bluetooth settings
+        if (androidInfo.version.sdkInt > 31) {
+          openBluetoothSettings();
+        } else {
+          // For Android 12 or lower, disable Bluetooth
+          bool? isDisabled = await bluetoothSerial.requestDisable();
+          if (isDisabled == true) {
+            state = state.copyWith(isBluetoothOn: false);
+            if (kDebugMode) {
+              print("Bluetooth has been turned off (Android 12 or lower).");
+            }
+          }
+        }
+      }
     } catch (e) {
       if (kDebugMode) {
         print("Error stopping scanning or disabling Bluetooth: $e");
+      }
+    }
+  }
+
+  Future<void> openBluetoothSettings() async {
+    try {
+      // Create an Intent to open Bluetooth settings
+      final intent = AndroidIntent(
+        action: 'android.settings.BLUETOOTH_SETTINGS',
+        package: 'com.android.settings',
+      );
+
+      // Launch the intent
+      await intent.launch();
+    } catch (e) {
+      if (kDebugMode) {
+        print("Failed to open Bluetooth settings: $e");
       }
     }
   }

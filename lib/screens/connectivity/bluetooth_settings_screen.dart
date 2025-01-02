@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:superhorn/screens/homescreen.dart';
@@ -99,12 +100,20 @@ class _BluetoothSettingsScreenState
                       child: Switch(
                         value: bluetoothState.isBluetoothOn,
                         onChanged: (value) async {
-                          bluetoothNotifier.setBluetoothOn(value);
                           if (value) {
                             bluetoothNotifier.scanForDevices();
                           } else {
-                            bluetoothNotifier.stopScanning();
+                            await bluetoothNotifier.stopScanning();
                           }
+
+                          FlutterBluetoothSerial.instance
+                              .onStateChanged()
+                              .listen((BluetoothState state) {
+                            if (!state.isEnabled) {
+                              bluetoothNotifier.setBluetoothOn(false);
+                              bluetoothNotifier.resetState();
+                            }
+                          });
                         },
                         activeColor: Colors.white,
                         activeTrackColor: AColors.blueColor,
