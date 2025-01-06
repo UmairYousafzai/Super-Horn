@@ -8,7 +8,6 @@ import 'package:superhorn/screens/widgets/search_field_widget.dart';
 
 import '../core/theme/colors.dart';
 import '../core/utils/navigations.dart';
-import '../data/data_source/local/sound_data.dart';
 import '../domain/entities/sound.dart';
 import '../providers/checked_item_provider.dart';
 import '../providers/sound_provider.dart';
@@ -35,7 +34,6 @@ class _HomescreenState extends ConsumerState<Homescreen> {
   @override
   void initState() {
     super.initState();
-    assignHornSounds();
     _audioPlayer.playerStateStream.listen((playerState) {
       if (playerState.processingState == ProcessingState.completed) {
         setState(() {
@@ -101,7 +99,7 @@ class _HomescreenState extends ConsumerState<Homescreen> {
       });
       // Load and play the new audio file
       try {
-        await _audioPlayer.setAsset('assets/sounds/$soundFile');
+        await _audioPlayer.setAsset(soundFile);
         await _audioPlayer.play();
       } catch (e) {
         // If there's an error, reset the state
@@ -293,7 +291,7 @@ class _HomescreenState extends ConsumerState<Homescreen> {
                                   GestureDetector(
                                     onTap: () {
                                       _playPauseHornSound(
-                                          _filteredSounds[index].hornSound!,
+                                          _filteredSounds[index].hornSound,
                                           index);
                                     },
                                     child: Container(
