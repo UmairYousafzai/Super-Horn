@@ -44,7 +44,7 @@ class MyApp extends ConsumerWidget {
               const Size(375, 812), // Replace with your design screen size
           minTextAdapt: true,
           builder: (context, child) {
-            return const MaterialApp(
+            return const MaterialApp(title: "Super Air Horn",
               debugShowCheckedModeBanner: false,
               // home: userExists ? Homescreen() : const LoginScreen(),
               home: LandingScreen(),
