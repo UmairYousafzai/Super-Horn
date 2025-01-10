@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:superhorn/screens/play_horn_with_bluetooth.dart';
+import 'package:superhorn/screens/widgets/list_view_item.dart';
 import 'package:superhorn/screens/widgets/screen_background_container.dart';
 import 'package:superhorn/screens/widgets/search_field_widget.dart';
 
@@ -10,8 +11,9 @@ import '../core/theme/colors.dart';
 import '../core/utils/navigations.dart';
 import '../domain/entities/sound.dart';
 import '../providers/checked_item_provider.dart';
+import '../providers/shared_pref_provider.dart';
 import '../providers/sound_provider.dart';
-import '../screens/widgets/navigation_drawer_widget.dart';
+import 'auth/login_screen.dart';
 
 class Homescreen extends ConsumerStatefulWidget {
   const Homescreen(this.isComingFromPlayOption, {super.key});
@@ -117,6 +119,7 @@ class _HomescreenState extends ConsumerState<Homescreen> {
     // Your existing build method remains unchanged
     final soundNotifier = ref.read(soundSelectionProvider.notifier);
     final checkedItems = ref.watch(checkedItemsProvider);
+    final sharedPreferencesNotifier = ref.read(sharedPreferencesProvider);
 
     bool isAllSelected = checkedItems.length == _filteredSounds.length &&
         _filteredSounds.isNotEmpty;
@@ -137,6 +140,7 @@ class _HomescreenState extends ConsumerState<Homescreen> {
                 backgroundColor: Colors.transparent,
               )
             : AppBar(
+                automaticallyImplyLeading: false,
                 title: const Text(
                   'Home',
                   style: TextStyle(
@@ -148,6 +152,7 @@ class _HomescreenState extends ConsumerState<Homescreen> {
                   size: 32.h,
                 ),
                 actions: [
+                  // Filter button
                   Padding(
                     padding: EdgeInsets.only(right: 18.w),
                     child: PopupMenuButton<String>(
@@ -156,6 +161,9 @@ class _HomescreenState extends ConsumerState<Homescreen> {
                         width: 24,
                         height: 24,
                       ),
+                      onSelected: (String value) {
+                        _setCategoryFilter(value);
+                      },
                       itemBuilder: (context) => [
                         const PopupMenuItem(
                           value: "All",
@@ -187,14 +195,49 @@ class _HomescreenState extends ConsumerState<Homescreen> {
                       ],
                     ),
                   ),
+                  // More options button (3 vertical dots)
+                  PopupMenuButton<String>(
+                    icon: const Icon(Icons.more_vert),
+                    padding: EdgeInsets.zero,
+                    position: PopupMenuPosition.under,
+                    constraints: const BoxConstraints(
+                      minWidth: 100,
+                      maxWidth: 100,
+                    ),
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: "logout",
+                        height: 30, // Reduced height
+                        onTap: () async {
+                          await sharedPreferencesNotifier.clearUserData();
+                          navigatePushAndRemoveUntil(
+                              context, const LoginScreen(), false);
+                        },
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Icon(Icons.logout, size: 20),
+                            SizedBox(width: 8),
+                            Text(
+                              "Logout",
+                              style: TextStyle(
+                                fontFamily: 'JosefinSans',
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
-        onDrawerChanged: (isOpened) {
-          if (isOpened) {
-            _searchFocusNode.unfocus();
-          }
-        },
-        drawer: widget.isComingFromPlayOption ? null : MyDrawer(),
+        // onDrawerChanged: (isOpened) {
+        //   if (isOpened) {
+        //     _searchFocusNode.unfocus();
+        //   }
+        // },
+        // drawer: widget.isComingFromPlayOption ? null : MyDrawer(),
         body: ScreenBackgroundContainer(
           child: SafeArea(
             child: Padding(
@@ -262,141 +305,40 @@ class _HomescreenState extends ConsumerState<Homescreen> {
                       ],
                     ),
                   Expanded(
-                    child: ListView.builder(
-                      itemCount: _filteredSounds.length,
-                      itemBuilder: (context, index) {
-                        bool isPlaying = _currentlyPlayingIndex == index;
-                        bool isChecked =
-                            checkedItems.contains(_filteredSounds[index]);
+                      child: ListView.builder(
+                    itemCount: _filteredSounds.length,
+                    itemBuilder: (context, index) {
+                      final sound = _filteredSounds[index];
+                      final isPlaying = _currentlyPlayingIndex == index;
+                      final isChecked = checkedItems.contains(sound);
 
-                        return GestureDetector(
-                          onTap: () {
-                            if (widget.isComingFromPlayOption) {
-                              soundNotifier.selectSound(index);
-                              navigateToScreen(
-                                  context, const PlayHornWithBluetooth());
-                            }
-                          },
-                          child: Card(
-                            elevation: 2.0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            color: Colors.white,
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 10.h, horizontal: 10.w),
-                              child: Row(
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      _playPauseHornSound(
-                                          _filteredSounds[index].hornSound,
-                                          index);
-                                    },
-                                    child: Container(
-                                      height: 40.h,
-                                      width: 40.w,
-                                      decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                              color: AColors.primaryColor,
-                                              width: 1.5)),
-                                      child: Icon(
-                                        isPlaying
-                                            ? Icons.pause
-                                            : Icons.play_arrow_rounded,
-                                        size: 30,
-                                        color: Colors.black.withOpacity(0.5),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 12.w,
-                                  ),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        _filteredSounds[index].soundName,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          fontFamily: 'Poppins',
-                                          fontSize: 14.sp,
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                      Text(
-                                        "(${_filteredSounds[index].code})",
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          fontFamily: 'Poppins',
-                                          fontSize: 11.sp,
-                                          color: Colors.black.withOpacity(0.6),
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      if (widget.isComingFromPlayOption != true)
-                                        Text(
-                                          _filteredSounds[index].category,
-                                          style: TextStyle(
-                                            fontFamily: 'Poppins',
-                                            fontSize: 11.sp,
-                                            color:
-                                                Colors.black.withOpacity(0.6),
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                  const Spacer(),
-                                  widget.isComingFromPlayOption
-                                      ? Container(
-                                          height: 25.h,
-                                          width: 25.w,
-                                          decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              color: AColors.primaryColor),
-                                          child: Center(
-                                            child: Text(
-                                              _filteredSounds[index]
-                                                  .id
-                                                  .toString(),
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                fontFamily: 'Poppins',
-                                                fontSize: 12.sp,
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                      : Checkbox(
-                                          value: isChecked,
-                                          checkColor: Colors.white,
-                                          activeColor: AColors.primaryColor
-                                              .withOpacity(0.8),
-                                          onChanged: (bool? value) {
-                                            if (value != null) {
-                                              ref
-                                                  .read(checkedItemsProvider
-                                                      .notifier)
-                                                  .toggleItem(
-                                                      _filteredSounds[index]);
-                                            }
-                                          },
-                                        ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                      return SoundItem(
+                        sound: sound,
+                        isPlaying: isPlaying,
+                        isChecked: isChecked,
+                        isComingFromPlayOption: widget.isComingFromPlayOption,
+                        onPlayPause: () {
+                          _playPauseHornSound(sound.hornSound, index);
+                        },
+                        onSelect: () {
+                          if (!widget.isComingFromPlayOption) {
+                            ref
+                                .read(checkedItemsProvider.notifier)
+                                .toggleItem(sound);
+                          }
+                        },
+                        onNavigate: widget.isComingFromPlayOption
+                            ? () {
+                                ref
+                                    .read(soundSelectionProvider.notifier)
+                                    .selectSound(index);
+                                navigateToScreen(
+                                    context, const PlayHornWithBluetooth());
+                              }
+                            : null,
+                      );
+                    },
+                  )),
                 ],
               ),
             ),
