@@ -16,7 +16,7 @@ import '../providers/sound_provider.dart';
 import 'auth/login_screen.dart';
 
 class Homescreen extends ConsumerStatefulWidget {
-  Homescreen(this.isComingFromPlayOption, {super.key});
+  const Homescreen(this.isComingFromPlayOption, {super.key});
 
   final bool isComingFromPlayOption;
 

@@ -15,7 +15,7 @@
     <application
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:label="superhorn">
+        android:label="Super Air Horn">
 
         <activity
             android:name=".MainActivity"
