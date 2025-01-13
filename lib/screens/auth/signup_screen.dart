@@ -2,12 +2,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:superhorn/domain/entities/user.dart';
 import 'package:superhorn/providers/shared_pref_provider.dart';
 import 'package:superhorn/screens/landing_screen.dart';
 
 import '../../core/theme/colors.dart';
 import '../../core/utils/navigations.dart';
-import '../../providers/signup_provider.dart';
+import '../../providers/auth/signup_provider.dart';
 import '../widgets/buttons.dart';
 import '../widgets/text_field_widget.dart';
 
@@ -188,22 +189,27 @@ class SignupScreen extends ConsumerWidget {
                           signupState.passwordError!.isEmpty &&
                           signupState.cityError!.isEmpty &&
                           signupState.countryError!.isEmpty) {
-                        //saving user data to shared preference
-                        await sharedPrefNotifier
-                            .saveUserData(
+                        try {
+                          await signupNotifier.signUp().then((value) {
+                            final user = User(
                                 name: signupState.name,
                                 email: signupState.email,
-                                password: signupState.password,
                                 city: signupState.city,
-                                country: signupState.country)
-                            .then((value) {
-                          if (kDebugMode) {
-                            print(
-                                "--------------------User save successfully--------------");
-                          }
-                          navigatePushAndRemoveUntil(
-                              context, const LandingScreen(), false);
-                        });
+                                country: signupState.country);
+                            sharedPrefNotifier.saveUser(user);
+                            if (kDebugMode) {
+                              print(
+                                  "--------------------User save successfully--------------");
+                            }
+                            navigatePushAndRemoveUntil(
+                                context, const LandingScreen(), false);
+                          });
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(e.toString())),
+                          );
+                        }
+                        //saving user data to shared preference
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(

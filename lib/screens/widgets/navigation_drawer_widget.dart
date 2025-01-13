@@ -13,7 +13,7 @@ class MyDrawer extends ConsumerWidget {
     final sharedPreferencesNotifier = ref.read(sharedPreferencesProvider);
 
     // Retrieve user data from SharedPreferences using the getUserData function
-    final userData = sharedPreferencesNotifier.getUserData();
+    final userData = sharedPreferencesNotifier.getUser();
 
     return Drawer(
       child: Column(
@@ -22,8 +22,8 @@ class MyDrawer extends ConsumerWidget {
           UserAccountsDrawerHeader(
             decoration:
                 BoxDecoration(color: AColors.primaryColor.withOpacity(0.8)),
-            accountName: Text(userData['name'] ?? 'No Name'),
-            accountEmail: Text(userData['email'] ?? 'No Email'),
+            accountName: Text(userData!.name ?? 'No Name'),
+            accountEmail: Text(userData.email ?? 'No Email'),
             currentAccountPicture: const CircleAvatar(
               backgroundColor: Colors.white,
               child: Icon(

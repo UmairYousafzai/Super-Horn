@@ -1,15 +1,42 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../domain/entities/states/signup_state.dart';
+import '../../../domain/entities/states/signup_state.dart';
+import '../../domain/usecases/auth/signup_usecase.dart';
+import 'auth_usecase_provider.dart';
 
 class SignUpNotifier extends StateNotifier<SignUpState> {
-  SignUpNotifier() : super(SignUpState());
+  final SignUpUseCase _signUpUseCase;
+
+  SignUpNotifier(this._signUpUseCase) : super(SignUpState());
+
+  Future<void> signUp() async {
+    try {
+      state = state.copyWith(isLoading: true, error: '');
+
+      await _signUpUseCase.execute(
+        state.email,
+        state.password,
+      );
+
+      state = state.copyWith(
+        isLoading: false,
+        isSignedUp: true,
+        error: '',
+      );
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: e.toString(),
+        isSignedUp: false,
+      );
+    }
+  }
 
   // Method to update and validate the First Name
   void updateName(String value) {
     value = value.trim();
     if (value.isEmpty) {
-      state = state.copyWith(name: "", nameError: 'First Name cannot be empty');
+      state = state.copyWith(name: "", nameError: 'Name cannot be empty');
     } else if (value.length < 2 || value.length > 50) {
       state = state.copyWith(
           name: value,
@@ -89,5 +116,6 @@ class SignUpNotifier extends StateNotifier<SignUpState> {
 // Provider to manage the SignUpNotifier
 final signUpProvider =
     StateNotifierProvider<SignUpNotifier, SignUpState>((ref) {
-  return SignUpNotifier();
+  final signoutUseCase = ref.watch(signUpUseCaseProvider);
+  return SignUpNotifier(signoutUseCase);
 });

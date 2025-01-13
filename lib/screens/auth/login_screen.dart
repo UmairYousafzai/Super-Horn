@@ -3,18 +3,82 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:superhorn/core/theme/colors.dart';
 import 'package:superhorn/screens/auth/signup_screen.dart';
-import 'package:superhorn/screens/homescreen.dart';
 
 import '../../core/utils/navigations.dart';
-import '../../providers/login_provider.dart';
+import '../../providers/auth/login_provider.dart';
+import '../../providers/firebase/firebase_usecase_provider.dart';
+import '../../providers/shared_pref_provider.dart';
+import '../../utils/helper_functions.dart';
 import '../widgets/buttons.dart';
 import '../widgets/text_field_widget.dart';
 
-class LoginScreen extends ConsumerWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LoginScreen> createState() {
+    return _LoginScreen();
+  }
+}
+
+class _LoginScreen extends ConsumerState<LoginScreen> {
+  final emailFocusNode = FocusNode();
+  final passwordFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+//Function  for the field validation and saving user data
+  void handleButtonClick() async {
+    var sharedPreferencesHelper = ref.read(sharedPreferencesProvider);
+    var loginState = ref.watch(loginProvider);
+    var loginNotifier = ref.read(loginProvider.notifier);
+    final fetchUserUseCase = ref.read(fetchUserUseCaseProvider);
+
+    // Validate input fields
+    loginNotifier.updateEmail(loginState.email);
+    loginNotifier.updatePassword(loginState.password);
+
+    // Get the updated state after validation
+    loginState = ref.watch(loginProvider);
+
+    String emailError = loginState.emailError ?? "";
+    String passwordError = loginState.passwordError ?? "";
+
+    if (loginState.email.isNotEmpty &&
+        emailError.isEmpty &&
+        loginState.password.isNotEmpty &&
+        passwordError.isEmpty) {
+      try {
+        await loginNotifier.login();
+        loginState = ref.watch(loginProvider);
+
+        // Show error message if login failed
+        if (loginState.error!.isNotEmpty) {
+          showSnackBar(loginState.error!, context);
+          return; // Stop execution if there's an error
+        }
+
+        if (loginState.isSignedIn) {
+          try {
+            final user = await fetchUserUseCase.execute();
+            await sharedPreferencesHelper.saveUser(user);
+          } catch (e) {
+            showSnackBar(e.toString(), context);
+          }
+        }
+      } catch (e) {
+        showSnackBar(e.toString(), context);
+      }
+    } else {
+      showSnackBar('Please enter valid inputs', context);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final loginState = ref.watch(loginProvider);
     final loginNotifier = ref.read(loginProvider.notifier);
 
@@ -154,24 +218,7 @@ class LoginScreen extends ConsumerWidget {
                               fontSize: 20.sp,
                               color: Colors.white),
                         ),
-                        () {
-                          if (loginState.email.isNotEmpty &&
-                              loginState.password.isNotEmpty &&
-                              loginState.emailError!.isEmpty &&
-                              loginState.passwordError!.isEmpty) {
-                            navigatePushReplacement(context, Homescreen(false));
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text(
-                                'Please enter valid inputs',
-                                style: TextStyle(
-                                  fontFamily: 'JosefinSans',
-                                ),
-                              )),
-                            );
-                          }
-                        },
+                        () {},
                       ),
                       SizedBox(
                         height: 25.h,

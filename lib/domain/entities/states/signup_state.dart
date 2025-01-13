@@ -9,6 +9,9 @@ class SignUpState {
   final String? passwordError; // Optional field for password error
   final String? countryError; // Optional field for country error
   final String? cityError; // Optional field for city error
+  final bool isLoading; // Added for loading state
+  final bool isSignedUp; // Added for signup success
+  final String? error; // Added for general errors
 
   SignUpState({
     this.name = '',
@@ -21,6 +24,9 @@ class SignUpState {
     this.passwordError = '',
     this.countryError = '',
     this.cityError = '',
+    this.isLoading = false, // Initialize new fields
+    this.isSignedUp = false,
+    this.error,
   });
 
   SignUpState copyWith({
@@ -34,6 +40,9 @@ class SignUpState {
     String? passwordError,
     String? countryError,
     String? cityError,
+    bool? isLoading, // Add to copyWith
+    bool? isSignedUp,
+    String? error,
   }) {
     return SignUpState(
       name: name ?? this.name,
@@ -46,6 +55,9 @@ class SignUpState {
       passwordError: passwordError ?? this.passwordError,
       countryError: countryError ?? this.countryError,
       cityError: cityError ?? this.cityError,
+      isLoading: isLoading ?? this.isLoading,
+      isSignedUp: isSignedUp ?? this.isSignedUp,
+      error: error ?? this.error,
     );
   }
 }
