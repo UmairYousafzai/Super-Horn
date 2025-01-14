@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "905331178705",
+    "project_id": "super-air-horn-a712c",
+    "storage_bucket": "super-air-horn-a712c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:905331178705:android:5cf5649af026902523d9f0",
+        "android_client_info": {
+          "package_name": "com.rapidzz.superhorn"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLnGftI_vCSj8VEYyDor9fhz-ZRS9PoPE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
