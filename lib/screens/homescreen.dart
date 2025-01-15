@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:superhorn/providers/auth/login_provider.dart';
 import 'package:superhorn/screens/play_horn_with_bluetooth.dart';
 import 'package:superhorn/screens/widgets/list_view_item.dart';
 import 'package:superhorn/screens/widgets/screen_background_container.dart';
@@ -120,7 +121,7 @@ class _HomescreenState extends ConsumerState<Homescreen> {
     final soundNotifier = ref.read(soundSelectionProvider.notifier);
     final checkedItems = ref.watch(checkedItemsProvider);
     final sharedPreferencesNotifier = ref.read(sharedPreferencesProvider);
-
+    final loginNotifier = ref.read(loginProvider.notifier);
     bool isAllSelected = checkedItems.length == _filteredSounds.length &&
         _filteredSounds.isNotEmpty;
 
@@ -209,7 +210,10 @@ class _HomescreenState extends ConsumerState<Homescreen> {
                         value: "logout",
                         height: 30, // Reduced height
                         onTap: () async {
-                          await sharedPreferencesNotifier.clearUserData();
+                          await loginNotifier.logout().then((value) {
+                            sharedPreferencesNotifier.clearUserData();
+                          });
+
                           navigatePushAndRemoveUntil(
                               context, const LoginScreen(), false);
                         },

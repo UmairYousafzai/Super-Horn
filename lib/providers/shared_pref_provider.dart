@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,6 +13,14 @@ final sharedPreferencesProvider =
 
 class SharedPreferencesNotifier {
   late SharedPreferences _prefs;
+
+  SharedPreferencesNotifier() {
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    _prefs = await SharedPreferences.getInstance();
+  }
 
   // // Save user data to SharedPreferences
   // Future<void> saveUserData({
@@ -37,6 +46,9 @@ class SharedPreferencesNotifier {
         country: user.country);
     final userJson = jsonEncode(userModel.toJson());
     await _prefs.setString('userDetails', userJson);
+    if (kDebugMode) {
+      print("User saved locally");
+    }
   }
 
   User? getUser() {
@@ -63,10 +75,7 @@ class SharedPreferencesNotifier {
 
   Future<bool> doesUserExist() async {
     _prefs = await SharedPreferences.getInstance();
-    final hasUserData = _prefs.getString('name') != null &&
-        _prefs.getString('email') != null &&
-        _prefs.getString('password') != null;
-    return hasUserData;
+    return _prefs.containsKey('userDetails');
   }
 
   // Clear user data from SharedPreferences

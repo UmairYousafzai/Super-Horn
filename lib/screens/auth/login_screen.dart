@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:superhorn/core/theme/colors.dart';
 import 'package:superhorn/screens/auth/signup_screen.dart';
+import 'package:superhorn/screens/landing_screen.dart';
 
 import '../../core/utils/navigations.dart';
 import '../../providers/auth/login_provider.dart';
@@ -37,11 +38,9 @@ class _LoginScreen extends ConsumerState<LoginScreen> {
     var loginNotifier = ref.read(loginProvider.notifier);
     final fetchUserUseCase = ref.read(fetchUserUseCaseProvider);
 
-    // Validate input fields
     loginNotifier.updateEmail(loginState.email);
     loginNotifier.updatePassword(loginState.password);
 
-    // Get the updated state after validation
     loginState = ref.watch(loginProvider);
 
     String emailError = loginState.emailError ?? "";
@@ -65,6 +64,7 @@ class _LoginScreen extends ConsumerState<LoginScreen> {
           try {
             final user = await fetchUserUseCase.execute();
             await sharedPreferencesHelper.saveUser(user);
+            navigatePushReplacement(context, const LandingScreen());
           } catch (e) {
             showSnackBar(e.toString(), context);
           }
@@ -218,7 +218,9 @@ class _LoginScreen extends ConsumerState<LoginScreen> {
                               fontSize: 20.sp,
                               color: Colors.white),
                         ),
-                        () {},
+                        () {
+                          handleButtonClick();
+                        },
                       ),
                       SizedBox(
                         height: 25.h,

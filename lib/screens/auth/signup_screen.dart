@@ -2,13 +2,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:superhorn/domain/entities/user.dart';
+import 'package:superhorn/data/models/local/user_model.dart';
 import 'package:superhorn/providers/shared_pref_provider.dart';
 import 'package:superhorn/screens/landing_screen.dart';
 
 import '../../core/theme/colors.dart';
 import '../../core/utils/navigations.dart';
 import '../../providers/auth/signup_provider.dart';
+import '../../providers/firebase/firebase_usecase_provider.dart';
 import '../widgets/buttons.dart';
 import '../widgets/text_field_widget.dart';
 
@@ -20,6 +21,45 @@ class SignupScreen extends ConsumerWidget {
     final signupState = ref.watch(signUpProvider);
     final signupNotifier = ref.read(signUpProvider.notifier);
     final sharedPrefNotifier = ref.read(sharedPreferencesProvider);
+    final saveUserUseCase = ref.read(saveUserUseCaseProvider);
+    void handleButtonClick() async {
+      if (signupState.email.isNotEmpty &&
+          signupState.name.isNotEmpty &&
+          signupState.password.isNotEmpty &&
+          signupState.city.isNotEmpty &&
+          signupState.country.isNotEmpty &&
+          signupState.nameError!.isEmpty &&
+          signupState.emailError!.isEmpty &&
+          signupState.passwordError!.isEmpty &&
+          signupState.cityError!.isEmpty &&
+          signupState.countryError!.isEmpty) {
+        try {
+          await signupNotifier.signUp().then((value) {
+            final user = UserModel(
+                name: signupState.name,
+                email: signupState.email,
+                city: signupState.city,
+                country: signupState.country);
+            sharedPrefNotifier.saveUser(user);
+            saveUserUseCase.execute(user);
+
+            if (kDebugMode) {
+              print("--------------------User save successfully--------------");
+            }
+            navigatePushAndRemoveUntil(context, const LandingScreen(), false);
+          });
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(e.toString())),
+          );
+        }
+        //saving user data to shared preference
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please enter valid inputs')),
+        );
+      }
+    }
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -178,44 +218,8 @@ class SignupScreen extends ConsumerWidget {
                               fontFamily: 'Poppins',
                               fontSize: 18.sp,
                               color: Colors.white),
-                        ), () async {
-                      if (signupState.email.isNotEmpty &&
-                          signupState.name.isNotEmpty &&
-                          signupState.password.isNotEmpty &&
-                          signupState.city.isNotEmpty &&
-                          signupState.country.isNotEmpty &&
-                          signupState.nameError!.isEmpty &&
-                          signupState.emailError!.isEmpty &&
-                          signupState.passwordError!.isEmpty &&
-                          signupState.cityError!.isEmpty &&
-                          signupState.countryError!.isEmpty) {
-                        try {
-                          await signupNotifier.signUp().then((value) {
-                            final user = User(
-                                name: signupState.name,
-                                email: signupState.email,
-                                city: signupState.city,
-                                country: signupState.country);
-                            sharedPrefNotifier.saveUser(user);
-                            if (kDebugMode) {
-                              print(
-                                  "--------------------User save successfully--------------");
-                            }
-                            navigatePushAndRemoveUntil(
-                                context, const LandingScreen(), false);
-                          });
-                        } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(e.toString())),
-                          );
-                        }
-                        //saving user data to shared preference
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Please enter valid inputs')),
-                        );
-                      }
+                        ), () {
+                      handleButtonClick();
                     }),
                   ],
                 ),

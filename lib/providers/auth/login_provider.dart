@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../domain/entities/states/login_state.dart';
@@ -18,6 +19,9 @@ class LoginNotifier extends StateNotifier<LoginState> {
   Future<void> login() async {
     // resetState();
     try {
+      if (kDebugMode) {
+        print('Logging in.......');
+      }
       state = state.copyWith(isLoading: true, error: '', isSignedIn: false);
 
       await _loginUseCase.execute(
@@ -41,7 +45,7 @@ class LoginNotifier extends StateNotifier<LoginState> {
 
   Future<void> logout() async {
     try {
-      state = state.copyWith(isLoading: true, error: null);
+      state = state.copyWith(isLoading: true, error: '');
 
       await _logoutUseCase.execute();
 
