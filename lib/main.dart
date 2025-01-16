@@ -37,7 +37,6 @@ class MyApp extends ConsumerWidget {
             ),
           );
         }
-
         if (snapshot.hasError) {
           return const MaterialApp(
             home: Scaffold(
