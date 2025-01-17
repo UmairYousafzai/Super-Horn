@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:superhorn/providers/shared_pref_provider.dart';
 import 'package:superhorn/screens/auth/login_screen.dart';
 import 'package:superhorn/screens/landing_screen.dart';
+import 'package:superhorn/screens/product_screen.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -45,9 +46,10 @@ class MyApp extends ConsumerWidget {
               const Size(375, 812), // Replace with your design screen size
           minTextAdapt: true,
           builder: (context, child) {
-            return MaterialApp(
+            return const MaterialApp(
               debugShowCheckedModeBanner: false,
-              home: userExists ? const LandingScreen() : const LoginScreen(),
+              home: ProductsScreen()
+              //userExists ? const LandingScreen() : const LoginScreen(),
               //home: (),
             );
           },
