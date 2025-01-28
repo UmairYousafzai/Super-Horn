@@ -29,7 +29,7 @@ class ProductContainer extends StatelessWidget {
           child: Stack(
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
                 child: Row(
                   children: [
                     Image.asset(
