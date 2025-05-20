@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:superhorn/core/utils/media_query_extension.dart';
 import 'package:superhorn/screens/connectivity/bluetooth_settings_screen.dart';
 import 'package:superhorn/screens/homescreen.dart';
+import 'package:superhorn/screens/product_screen.dart';
 import 'package:superhorn/screens/widgets/background_image_container.dart';
 import 'package:superhorn/screens/widgets/buttons.dart';
 
@@ -62,7 +63,7 @@ class LandingScreen extends ConsumerWidget {
                               color: Colors.white,
                               fontWeight: FontWeight.w500),
                         ), () {
-                      navigateToScreen(context, Homescreen(false));
+                      navigateToScreen(context, const ProductsScreen());
                     })
                   ],
                 ),

@@ -53,7 +53,7 @@ class MyApp extends ConsumerWidget {
           builder: (context, child) {
             return const MaterialApp(
               debugShowCheckedModeBanner: false,
-              home: ProductsScreen()
+              home: LandingScreen()
               //userExists ? const LandingScreen() : const LoginScreen(),
               //home: (),
             );

@@ -4,8 +4,7 @@ import 'package:superhorn/core/utils/media_query_extension.dart';
 
 import '../../core/theme/colors.dart';
 
-primaryButton(BuildContext context, Widget child, VoidCallback onTap,
-    {double? width, double? height}) {
+primaryButton(BuildContext context, Widget child, VoidCallback onTap, {double? width, double? height}) {
   return GestureDetector(
     onTap: onTap,
     child: Container(
@@ -26,8 +25,7 @@ primaryButton(BuildContext context, Widget child, VoidCallback onTap,
   );
 }
 
-outlinedButton(BuildContext context, Widget child, VoidCallback onTap,
-    {double? width, double? height}) {
+outlinedButton(BuildContext context, Widget child, VoidCallback onTap, {double? width, double? height}) {
   return GestureDetector(
     onTap: onTap,
     child: Container(
@@ -50,14 +48,32 @@ socialButton(BuildContext context, String image) {
       border: Border.all(
         color: Colors.black.withOpacity(0.3),
       ),
-      borderRadius:
-          BorderRadius.circular(100), // Set border radius to make it circular
+      borderRadius: BorderRadius.circular(100), // Set border radius to make it circular
     ),
     child: Center(
       child: Image.asset(
         image,
         height: 35.h,
         width: 35.h, // Adjust the image size to fit nicely inside the circle
+      ),
+    ),
+  );
+}
+
+Widget PlayPauseButton(bool isAnimating, VoidCallback onPress) {
+  return GestureDetector(
+    onTap: onPress,
+    child: Container(
+      height: 70.h,
+      width: 70.w,
+      decoration: BoxDecoration(
+        color: AColors.primaryColor,
+        borderRadius: BorderRadius.circular(80 / 2),
+      ),
+      child: Icon(
+        isAnimating ? Icons.pause_rounded : Icons.play_arrow_rounded,
+        color: Colors.white,
+        size: 80 * 0.6,
       ),
     ),
   );
@@ -107,10 +123,7 @@ class WhiteContainerButton extends StatelessWidget {
             Text(
               text,
               style: TextStyle(
-                  fontFamily: 'Poppins',
-                  color: AColors.primaryColor,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18.sp),
+                  fontFamily: 'Poppins', color: AColors.primaryColor, fontWeight: FontWeight.w600, fontSize: 18.sp),
             )
           ],
         ),

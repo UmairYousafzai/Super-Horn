@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
 import 'package:superhorn/core/utils/media_query_extension.dart';
 import 'package:superhorn/screens/widgets/background_image_container.dart';
+import 'package:superhorn/screens/widgets/buttons.dart';
 import 'package:superhorn/screens/widgets/horns_animation_widget.dart';
 
 import '../core/theme/colors.dart';
@@ -15,12 +16,10 @@ class PlayHornWithBluetooth extends ConsumerStatefulWidget {
   const PlayHornWithBluetooth({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _SoundPlayScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _SoundPlayScreenState();
 }
 
-class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
-    with TickerProviderStateMixin {
+class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth> with TickerProviderStateMixin {
   AnimationController? _animationController;
   bool _isAnimating = true;
   Ticker? _ticker; // Add a ticker
@@ -36,11 +35,15 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500), // Adjust duration as needed
-    )..repeat();
+    )
+      ..repeat();
 
     Future(() {
       final bluetoothNotifier = ref.read(bluetoothNotifierProvider.notifier);
-      bluetoothNotifier.sendData(ref.watch(currentSoundProvider).id.toString());
+      bluetoothNotifier.sendData(ref
+          .watch(currentSoundProvider)
+          .id
+          .toString());
     });
   }
 
@@ -83,7 +86,9 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
 
     return GestureDetector(
       onTap: () {
-        FocusScope.of(context).unfocus;
+        FocusScope
+            .of(context)
+            .unfocus;
       },
       child: Scaffold(
         appBar: AppBar(
@@ -102,9 +107,7 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
                   children: [
                     Container(
                         width: context.mqW(0.85),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: Colors.white),
+                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: Colors.white),
                         child: Padding(
                           padding: const EdgeInsets.all(20.0),
                           child: Image.asset("assets/superhorn.png"),
@@ -133,8 +136,7 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
                           child: SizedBox(
                             width: context.mqW(0.8),
                             // Adjust this width to match the total width of your ImageRowWidget
-                            child: ImageRowWidget(
-                                isAnimating: bluetoothState.isAnimating),
+                            child: ImageRowWidget(isAnimating: bluetoothState.isAnimating),
                           ),
                         ),
                       ),
@@ -157,14 +159,12 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
                         itemCount: soundList.length,
                         itemBuilder: (context, index) {
                           final sound = soundList[index];
-                          final bool isSelected =
-                              index == ref.watch(soundSelectionProvider);
+                          final bool isSelected = index == ref.watch(soundSelectionProvider);
 
                           return GestureDetector(
                             onTap: () {
                               soundNotifier.selectSound(index);
-                              final currentSound =
-                                  ref.watch(currentSoundProvider);
+                              final currentSound = ref.watch(currentSoundProvider);
                               bluetoothNotifier.sendData(
                                 currentSound.id.toString(),
                               );
@@ -174,9 +174,7 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
                               height: isSelected ? 60.h : 50.h,
                               width: isSelected ? 60.h : 50.w,
                               decoration: BoxDecoration(
-                                color: isSelected
-                                    ? AColors.primaryColor
-                                    : Colors.white,
+                                color: isSelected ? AColors.primaryColor : Colors.white,
                                 shape: BoxShape.circle,
                               ),
                               child: Center(
@@ -185,12 +183,8 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
                                   style: TextStyle(
                                     fontFamily: 'Poppins',
                                     fontSize: isSelected ? 28.sp : 16.sp,
-                                    color: isSelected
-                                        ? Colors.white
-                                        : Colors.black,
-                                    fontWeight: isSelected
-                                        ? FontWeight.w700
-                                        : FontWeight.w500,
+                                    color: isSelected ? Colors.white : Colors.black,
+                                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                                   ),
                                 ),
                               ),
@@ -210,13 +204,11 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
                             IconButton(
                                 onPressed: () {
                                   soundNotifier.previous();
-                                  final currentSound =
-                                      ref.watch(currentSoundProvider);
+                                  final currentSound = ref.watch(currentSoundProvider);
                                   bluetoothNotifier.sendData(
                                     currentSound.id.toString(),
                                   );
-                                  _scrollToIndex(
-                                      ref.watch(soundSelectionProvider));
+                                  _scrollToIndex(ref.watch(soundSelectionProvider));
                                 },
                                 icon: Icon(
                                   Icons.skip_previous_rounded,
@@ -239,31 +231,28 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
                         SizedBox(
                           width: 20.w,
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _isAnimating = !_isAnimating;
-                              if (_isAnimating) {
-                                _animationController?.forward();
-                              } else {
-                                _animationController?.stop();
-                              }
-                            });
-                          },
-                          child: Lottie.asset(
-                            height: 80.h,
-                            width: 80.w,
-                            "assets/animation/play_animation.json",
-                            controller: _animationController,
-                            onLoaded: (composition) {
-                              _animationController?.duration =
-                                  composition.duration;
-                              if (bluetoothState.isAnimating) {
-                                _animationController?.repeat();
-                              }
-                            },
-                          ),
-                        ),
+
+                        PlayPauseButton(bluetoothState.isAnimating, () {
+                          final newAnimatingState = !bluetoothState.isAnimating;
+
+                          setState(() {
+                            bluetoothState.isAnimating = newAnimatingState;
+                            _isAnimating = newAnimatingState;
+                          });
+
+                          if (newAnimatingState) {
+                            debugPrint('Playing...');
+                            _animationController?.forward();
+                          } else {
+                            debugPrint('Pausing...');
+                            soundNotifier.selectSound(0);
+                            final currentSound = ref.read(currentSoundProvider);
+                            bluetoothNotifier.resetData(currentSound.id.toString());
+                            bluetoothNotifier.setAnimating(false);
+                            _animationController?.stop();
+                            _scrollToIndex(0);
+                          }
+                        }),
                         SizedBox(
                           width: 20.w,
                         ),
@@ -272,13 +261,11 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
                             IconButton(
                                 onPressed: () {
                                   soundNotifier.next();
-                                  final currentSound =
-                                      ref.watch(currentSoundProvider);
+                                  final currentSound = ref.watch(currentSoundProvider);
                                   bluetoothNotifier.sendData(
                                     currentSound.id.toString(),
                                   );
-                                  _scrollToIndex(
-                                      ref.watch(soundSelectionProvider));
+                                  _scrollToIndex(ref.watch(soundSelectionProvider));
                                 },
                                 icon: Icon(
                                   Icons.skip_next_rounded,
@@ -303,34 +290,34 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
                     SizedBox(
                       height: 35.h,
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        soundNotifier.selectSound(0);
-                        final currentSound = ref.watch(currentSoundProvider);
-                        bluetoothNotifier.resetData(
-                          currentSound.id.toString(),
-                        );
-                        bluetoothNotifier.setAnimating(false);
-                        setState(() {
-                          _isAnimating = false;
-                          _animationController?.stop();
-                        });
-                        _scrollToIndex(0);
-                      },
-                      child: Text(
-                        "Reset",
-                        overflow: TextOverflow.ellipsis,
-                        // Adds ellipsis when text overflows
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 14.sp,
-                          color: AColors.primaryColor,
-                          fontWeight: FontWeight.w400,
-                          decoration: TextDecoration.underline,
-                          decorationColor: AColors.primaryColor,
-                        ),
-                      ),
-                    ),
+                    // GestureDetector(
+                    //   onTap: () {
+                    //     soundNotifier.selectSound(0);
+                    //     final currentSound = ref.watch(currentSoundProvider);
+                    //     bluetoothNotifier.resetData(
+                    //       currentSound.id.toString(),
+                    //     );
+                    //     bluetoothNotifier.setAnimating(false);
+                    //     setState(() {
+                    //       _isAnimating = false;
+                    //       _animationController?.stop();
+                    //     });
+                    //     _scrollToIndex(0);
+                    //   },
+                    //   child: Text(
+                    //     "Reset",
+                    //     overflow: TextOverflow.ellipsis,
+                    //     // Adds ellipsis when text overflows
+                    //     style: TextStyle(
+                    //       fontFamily: 'Poppins',
+                    //       fontSize: 14.sp,
+                    //       color: AColors.primaryColor,
+                    //       fontWeight: FontWeight.w400,
+                    //       decoration: TextDecoration.underline,
+                    //       decorationColor: AColors.primaryColor,
+                    //     ),
+                    //   ),
+                    // ),
                     const Spacer(),
                   ],
                 ),
@@ -372,7 +359,7 @@ class _SoundPlayScreenState extends ConsumerState<PlayHornWithBluetooth>
                     ),
                     SizedBox(height: 20.h),
                     const Text(
-                      "Resetting...",
+                      "Pausing...",
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 18,

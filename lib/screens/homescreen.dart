@@ -141,13 +141,13 @@ class _HomescreenState extends ConsumerState<Homescreen> {
                 backgroundColor: Colors.transparent,
               )
             : AppBar(
-                automaticallyImplyLeading: false,
-                title: const Text(
-                  'Home',
-                  style: TextStyle(
-                    fontFamily: 'JosefinSans',
-                  ),
-                ),
+                automaticallyImplyLeading: true,
+                // title: const Text(
+                //   'Home',
+                //   style: TextStyle(
+                //     fontFamily: 'JosefinSans',
+                //   ),
+                // ),
                 backgroundColor: Colors.transparent,
                 iconTheme: IconThemeData(
                   size: 32.h,

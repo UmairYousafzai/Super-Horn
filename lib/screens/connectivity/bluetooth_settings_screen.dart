@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:superhorn/core/utils/helper_functions.dart';
 import 'package:superhorn/screens/homescreen.dart';
 import 'package:superhorn/screens/widgets/background_image_container.dart';
+import 'package:superhorn/screens/widgets/buttons.dart';
 
 import '../../core/theme/colors.dart';
 import '../../core/utils/navigations.dart';
@@ -14,12 +16,10 @@ class BluetoothSettingsScreen extends ConsumerStatefulWidget {
   const BluetoothSettingsScreen({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _BluetoothSettingsScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _BluetoothSettingsScreenState();
 }
 
-class _BluetoothSettingsScreenState
-    extends ConsumerState<BluetoothSettingsScreen> {
+class _BluetoothSettingsScreenState extends ConsumerState<BluetoothSettingsScreen> {
   @override
   void initState() {
     super.initState();
@@ -34,19 +34,12 @@ class _BluetoothSettingsScreenState
     final bluetoothState = ref.watch(bluetoothNotifierProvider);
     final bluetoothNotifier = ref.read(bluetoothNotifierProvider.notifier);
 
-    // Listen to changes in the Bluetooth state
     ref.listen(bluetoothNotifierProvider, (previous, next) async {
-      if (next.isDeviceConnected) {
-        // showSuccessSnackBar(context, "Connected");
-        await Future.delayed(const Duration(milliseconds: 1000));
-        navigatePushAndRemoveUntil(
-          context,
-          Homescreen(true),
-          true,
-        );
+      if (previous?.isDeviceConnected != next.isDeviceConnected && next.isDeviceConnected) {
+        showSuccessSnackBar(context, 'Device Connected');
       }
 
-      if (next.errorMessage.isNotEmpty) {
+      if (next.errorMessage.isNotEmpty && previous?.errorMessage != next.errorMessage) {
         showErrorSnackBar(context, next.errorMessage);
         ref.read(bluetoothNotifierProvider.notifier).setError("");
       }
@@ -106,9 +99,7 @@ class _BluetoothSettingsScreenState
                             await bluetoothNotifier.stopScanning();
                           }
 
-                          FlutterBluetoothSerial.instance
-                              .onStateChanged()
-                              .listen((BluetoothState state) {
+                          FlutterBluetoothSerial.instance.onStateChanged().listen((BluetoothState state) {
                             if (!state.isEnabled) {
                               bluetoothNotifier.setBluetoothOn(false);
                               bluetoothNotifier.resetState();
@@ -157,8 +148,7 @@ class _BluetoothSettingsScreenState
                   Container(
                     decoration: BoxDecoration(
                         color: Colors.white,
-                        border:
-                            Border.all(color: AColors.primaryColor, width: 2),
+                        border: Border.all(color: AColors.primaryColor, width: 2),
                         borderRadius: BorderRadius.circular(12)),
                     child: ListTile(
                       leading: Image.asset(
@@ -178,9 +168,7 @@ class _BluetoothSettingsScreenState
                             ),
                           ),
                           Text(
-                            bluetoothState.isDeviceConnected
-                                ? "(Connected)"
-                                : "",
+                            bluetoothState.isDeviceConnected ? "(Connected)" : "",
                             style: TextStyle(
                               fontFamily: 'JosefinSans',
                               color: AColors.primaryColor,
@@ -240,9 +228,7 @@ class _BluetoothSettingsScreenState
                           itemCount: bluetoothState.devices.length,
                           itemBuilder: (context, index) {
                             final device = bluetoothState.devices[index];
-                            final isConnectingToDevice =
-                                bluetoothState.connectingDeviceAddress ==
-                                    device.deviceAddress;
+                            final isConnectingToDevice = bluetoothState.connectingDeviceAddress == device.deviceAddress;
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 8.0),
                               child: Material(
@@ -277,6 +263,7 @@ class _BluetoothSettingsScreenState
                                         ),
                                   onTap: () {
                                     bluetoothNotifier.connectToDevice(device);
+                                    // navigateToScreen(context, const Homescreen(true));
                                   },
                                 ),
                               ),
@@ -296,6 +283,18 @@ class _BluetoothSettingsScreenState
                           ),
                         ),
                 ),
+                if (bluetoothState.isDeviceConnected)
+                  Center(
+                    child: primaryButton(
+                        context,
+                        Text(
+                          'Next',
+                          style: TextStyle(
+                              fontFamily: 'Poppins', fontSize: 16.sp, color: Colors.white, fontWeight: FontWeight.w500),
+                        ), () {
+                      navigateToScreen(context, const Homescreen(true));
+                    }),
+                  )
               ],
             ),
           ),

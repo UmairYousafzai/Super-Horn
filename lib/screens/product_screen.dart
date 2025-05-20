@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:superhorn/core/utils/navigations.dart';
+import 'package:superhorn/screens/homescreen.dart';
 import 'package:superhorn/screens/widgets/background_image_container.dart';
 import 'package:superhorn/screens/widgets/product_container.dart';
 
@@ -50,11 +52,11 @@ class ProductsScreen extends ConsumerWidget {
                       fontWeight: FontWeight.w500),
                 ),
                 SizedBox(height: 35.h,),
-                const ProductContainer(imagePath: 'assets/product1.png', title: 'ROMEO JINGLE BELL (RMJ-620)', subtitle1: '3-Pipe Auto Horn', subtitle2: '20 Melodies (12/24 Volts)'),
+                ProductContainer(imagePath: 'assets/product1.png', title: 'ROMEO JINGLE BELL (RMJ-620)', subtitle1: '3-Pipe Auto Horn', subtitle2: '20 Melodies (12/24 Volts)', onPress: () { navigateToScreen(context, const Homescreen(true)); },),
                 SizedBox(height: 30.h,),
-                const ProductContainer(imagePath: 'assets/product2.png', title: 'ROMEO Air Horn (RM-620)', subtitle1: '6-Pipe Auto Horn', subtitle2: '20 Melodies (12/24 Volts)'),
+                ProductContainer(imagePath: 'assets/product2.png', title: 'ROMEO Air Horn (RM-620)', subtitle1: '6-Pipe Auto Horn', subtitle2: '20 Melodies (12/24 Volts)', onPress: () { navigateToScreen(context, const Homescreen(true)); },),
                 SizedBox(height: 30.h,),
-                const ProductContainer(imagePath: 'assets/product3.png', title: 'ROAD MASTER (RM-412)', subtitle1: '4-Pipe Auto Horn', subtitle2: '20 Melodies (12/24 Volts)'),
+                ProductContainer(imagePath: 'assets/product3.png', title: 'PLACE YOUR CUSTOM ORDER', subtitle1: '(Songs of your choice)', subtitle2: '', onPress: () { navigateToScreen(context, const Homescreen(false)); },),
               ],
             ),
           ),

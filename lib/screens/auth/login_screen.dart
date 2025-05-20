@@ -9,7 +9,7 @@ import '../../core/utils/navigations.dart';
 import '../../providers/auth/login_provider.dart';
 import '../../providers/firebase/firebase_usecase_provider.dart';
 import '../../providers/shared_pref_provider.dart';
-import '../../utils/helper_functions.dart';
+import '../../core/utils/helper_functions.dart';
 import '../widgets/buttons.dart';
 import '../widgets/text_field_widget.dart';
 

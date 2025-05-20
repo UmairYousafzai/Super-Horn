@@ -1,24 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:superhorn/core/utils/navigations.dart';
-import 'package:superhorn/screens/homescreen.dart';
-
 import '../../core/theme/colors.dart';
 
 class ProductContainer extends StatelessWidget {
   const ProductContainer({
-    super.key, required this.imagePath, required this.title, required this.subtitle1, required this.subtitle2,
+    super.key, required this.imagePath, required this.title, required this.subtitle1, required this.subtitle2, required this.onPress,
   });
   final String imagePath;
   final String title;
   final String subtitle1;
   final String subtitle2;
+  final VoidCallback onPress;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: ()=>navigateToScreen(context, const Homescreen(false)),
+      onTap: onPress,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: Container(
