@@ -353,6 +353,10 @@ flutter build apk --release
 flutter build ios --release
 ```
 
+<img width="1725" height="3036" alt="3" src="https://github.com/user-attachments/assets/728b40a6-b0dc-44a7-8a54-f345ce8e97eb" />  <img width="1725" height="3036" alt="4" src="https://github.com/user-attachments/assets/22cf74bd-63e1-41bb-abf8-f0ee26fdb574" />
+<img width="1725" height="3036" alt="5" src="https://github.com/user-attachments/assets/9cf2688d-4dd2-461c-b22a-be0c0e510d18" />  <img width="1725" height="3036" alt="8" src="https://github.com/user-attachments/assets/d9c4714c-1c41-4e72-8fb3-9107902ef6a3" />
+<img width="393" height="852" alt="iPhone 14   15 Pro - 12" src="https://github.com/user-attachments/assets/9279475b-6bc4-4335-a134-6819825a023b" />
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
